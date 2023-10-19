@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymptomTracker", "SymptomTracker\SymptomTracker.csproj", "{3D445041-0E7D-42B3-8D65-CF419769E395}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymptomTracker.BLL", "SymptomTracker.BLL\SymptomTracker.BLL.csproj", "{B0BC230E-E60D-4791-8725-1864E40AF3CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C830BEAA-ED80-4B52-9F20-58997F34708D}
+	EndGlobalSection
+EndGlobal
