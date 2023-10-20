@@ -1,4 +1,5 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
+using Daedalin.Core.OperationResult;
 using SymptomTracker.BLL;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,25 @@ namespace SymptomTracker
         public FirebaseBll FirebaseBll
         {
             get => m_FirebaseBll == null ? new FirebaseBll() : m_FirebaseBll;
+        }
+
+        public void Validate<T>(OperatingResult<T> operatingResult)
+        {
+            Validate(OperatingResult.StatusTransfer(operatingResult));
+        }
+        public void Validate(OperatingResult operatingResult)
+        {
+            if (!operatingResult.Success)
+            {
+                Shell.Current.DisplayAlert("Fehler: "+operatingResult.Division, operatingResult.Message,"Ok");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(operatingResult.Message))
+            {
+                Shell.Current.DisplayAlert(operatingResult.Division, operatingResult.Message, "Ok");
+                return;
+            }
         }
     }
 }

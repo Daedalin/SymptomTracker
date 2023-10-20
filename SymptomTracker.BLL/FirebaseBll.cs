@@ -35,14 +35,14 @@ namespace SymptomTracker.BLL
         {
             try
             {
-                if (m_firebaseAuthClient.User != null)
+                if (m_firebaseAuthClient?.User != null)
                     return OperatingResult<bool>.OK(true);
 
                 m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
-                await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, EMail);
+                await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, Password);
                 return OperatingResult<bool>.OK(true);
             }
-            catch (FirebaseAuthException)
+            catch (FirebaseAuthException ex)
             {
                 return new OperatingResult<bool>()
                 {
@@ -62,7 +62,7 @@ namespace SymptomTracker.BLL
 
         public OperatingResult CreateFirebaseClient()
         {
-            if (m_firebaseAuthClient.User == null)
+            if (m_firebaseAuthClient?.User == null)
                 return OperatingResult.Fail("Nicht eingelogt.", Daedalin.Core.Enum.eMessageType.Info, "Firebase");
 
             m_firebaseClient = new FirebaseClient(RealtimeDB_URL, new FirebaseOptions

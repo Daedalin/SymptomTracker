@@ -33,9 +33,12 @@ namespace SymptomTracker
         public RelayCommand SignUpClick { get; set; }
         #endregion
 
-        private void OnLoginClick()
+        private async void OnLoginClick()
         {
-
+           var Result = await FirebaseBll.Login(Email, Password);
+            Validate(Result);
+            if(Result.Result)
+               await Shell.Current.Navigation.PopAsync();
         }
 
         private void OnSignUpClick()
