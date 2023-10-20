@@ -7,7 +7,7 @@ namespace SymptomTracker.BLL
     public class FirebaseBll
     {
         #region Needs
-        private const string RealtimeDB_URL = "https://database-allaboutwork-default-rtdb.europe-west1.firebasedatabase.app/";
+        private const string RealtimeDB_URL = "";
         private FirebaseAuthClient m_firebaseAuthClient;
         private FirebaseClient m_firebaseClient;
         #endregion           
@@ -62,12 +62,16 @@ namespace SymptomTracker.BLL
 
         public OperatingResult CreateFirebaseClient()
         {
-            if (m_credential == null)
+            if (m_firebaseAuthClient.User == null)
                 return OperatingResult.Fail("Nicht eingelogt.", Daedalin.Core.Enum.eMessageType.Info, "Firebase");
 
             m_firebaseClient = new FirebaseClient(RealtimeDB_URL, new FirebaseOptions
-            {
-                AuthTokenAsyncFactory = () => m_credential.User.GetIdTokenAsync()
+            {                
+                AuthTokenAsyncFactory = async () =>
+                {
+                    await Task.Delay(50);
+                    return m_firebaseAuthClient.User.Credential.RefreshToken;
+                }
             });
 
             return OperatingResult.OK();
