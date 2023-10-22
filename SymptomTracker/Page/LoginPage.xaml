@@ -8,18 +8,25 @@
         <VerticalStackLayout MaximumWidthRequest="500" Padding="20">
 
             <VerticalStackLayout>
-                <Label FontFamily="Consolas" Text="Username"/>
+                <Label FontFamily="Consolas" Text="Benutzername"/>
                 <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
                     <VerticalStackLayout>
-                        <Entry x:Name="Username" Text="{Binding Email,Mode=TwoWay}" Margin="5,0,0,0" Placeholder="Username" FontSize="18"/>
+                        <Entry x:Name="Username"
+                               Text="{Binding Email,Mode=TwoWay}"
+                               Margin="5,0,0,0"
+                               Placeholder="E-Mail"
+                               FontSize="18"/>
 
                     </VerticalStackLayout>
                 </Frame>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Password"/>
+                <Label FontFamily="Consolas" Text="Passwort"/>
                 <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
-                    <Entry x:Name="Password" Text="{Binding Password,Mode=TwoWay}" Margin="5,0,0,0" Placeholder="Password"
+                    <Entry x:Name="Password" 
+                           Text="{Binding Password,Mode=TwoWay}" 
+                           Margin="5,0,0,0" 
+                           Placeholder="Passwort"
                IsPassword="True" FontSize="18"/>
                 </Frame>
             </VerticalStackLayout>
@@ -41,7 +48,7 @@
                FontFamily="Consolas">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span FontFamily="Consolas" FontAttributes="Bold" Text="Don't have an account?" />
+                            <Span FontFamily="Consolas" FontAttributes="Bold" Text="Don't have an account? " />
                             <Span FontFamily="Consolas" FontAttributes="Bold" Text="Sign Up"
                           TextColor="{StaticResource Primary}"
                           TextDecorations="Underline">

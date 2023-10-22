@@ -42,7 +42,7 @@ namespace SymptomTracker.BLL
                 await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, Password);
                 return OperatingResult<bool>.OK(true);
             }
-            catch (FirebaseAuthException ex)
+            catch (FirebaseAuthException)
             {
                 return new OperatingResult<bool>()
                 {
