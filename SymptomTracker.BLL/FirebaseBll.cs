@@ -13,7 +13,7 @@ namespace SymptomTracker.BLL
         #endregion           
 
         #region 
-        public async Task<OperatingResult> Registrieren(string EMail, string Password, string UserName)
+        public async Task<OperatingResult<bool>> Registrieren(string EMail, string Password, string UserName)
         {
             try
             {
@@ -23,11 +23,11 @@ namespace SymptomTracker.BLL
                     m_firebaseAuthClient.SignOut();
 
                 await m_firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(EMail, Password, UserName);
-                return OperatingResult.OK();
+                return OperatingResult<bool>.OK(true);
             }
             catch (Exception ex)
             {
-                return OperatingResult.Fail(ex, nameof(Registrieren));
+                return OperatingResult<bool>.Fail(ex, nameof(Registrieren));
             }
         }
 

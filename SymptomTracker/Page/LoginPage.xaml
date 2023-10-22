@@ -1,18 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converter="clr-namespace:SymptomTracker.Converter"
              x:Class="SymptomTracker.LoginPage"
              Title="{Binding ViewTitle}">
 
-    <Grid>
-        <VerticalStackLayout MaximumWidthRequest="500" Padding="20">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:InverseBooleanConverter x:Key="InverseBooleanCon"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <VerticalStackLayout>
+    <Grid>
+        <VerticalStackLayout MaximumWidthRequest="500" Margin="20,0,20,20">
+
+            <VerticalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsSignUp}">
                 <Label FontFamily="Consolas" Text="Benutzername"/>
                 <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
                     <VerticalStackLayout>
                         <Entry x:Name="Username"
+                               Text="{Binding DisplayName,Mode=TwoWay}"
+                               Margin="5,0,0,0"
+                               Placeholder="Benutzername"
+                               FontSize="18"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Margin="0,20,0,0">
+                <Label FontFamily="Consolas" Text="E-Mail Adresse"/>
+                <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
+                    <VerticalStackLayout>
+                        <Entry x:Name="Email"
                                Text="{Binding Email,Mode=TwoWay}"
+                               Keyboard="Email"
                                Margin="5,0,0,0"
                                Placeholder="E-Mail"
                                FontSize="18"/>
@@ -20,6 +41,7 @@
                     </VerticalStackLayout>
                 </Frame>
             </VerticalStackLayout>
+
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Passwort"/>
                 <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
@@ -39,10 +61,13 @@
             HorizontalOptions="FillAndExpand"/>
 
             <BoxView Margin="0,20,0,0"
-             HeightRequest="2"
-             HorizontalOptions="Fill" />
+                     HeightRequest="2"
+                     HorizontalOptions="Fill" 
+                     IsVisible="{Binding IsSignUp, Converter={StaticResource InverseBooleanCon}}"/>
 
-            <VerticalStackLayout Padding="10" Margin="0,10,0,0">
+            <VerticalStackLayout Padding="10" 
+                                 Margin="0,10,0,0" 
+                                 IsVisible="{Binding IsSignUp, Converter={StaticResource InverseBooleanCon}}">
                 <Label HorizontalOptions="Center"
                FontAttributes="Bold"
                FontFamily="Consolas">
@@ -50,14 +75,13 @@
                         <FormattedString>
                             <Span FontFamily="Consolas" FontAttributes="Bold" Text="Don't have an account? " />
                             <Span FontFamily="Consolas" FontAttributes="Bold" Text="Sign Up"
-                          TextColor="{StaticResource Primary}"
-                          TextDecorations="Underline">
-                                <Span.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SignUpClick}" />
-                                </Span.GestureRecognizers>
-                            </Span>
+                                  TextColor="{StaticResource Primary}"
+                                  TextDecorations="Underline"/>
                         </FormattedString>
                     </Label.FormattedText>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SignUpClick}" />
+                    </Label.GestureRecognizers>
                 </Label>
             </VerticalStackLayout>
         </VerticalStackLayout>

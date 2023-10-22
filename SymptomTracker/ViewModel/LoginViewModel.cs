@@ -1,4 +1,5 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
+using Daedalin.Core.OperationResult;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,18 @@ namespace SymptomTracker
 {
     internal class LoginViewModel : ViewModelBase
     {
-        public LoginViewModel()
+        public LoginViewModel() : this(false) { }
+
+        public LoginViewModel(bool _IsSignUp)
         {
+            IsSignUp = _IsSignUp;
+            if (IsSignUp)
+                ViewTitle = "Regestrieren";
+            else
+                ViewTitle = "Login";
             LoginClick = new RelayCommand(OnLoginClick);
             SignUpClick = new RelayCommand(OnSignUpClick);
-            ViewTitle = "Login";
+
         }
 
         #region Propertys
@@ -27,6 +35,16 @@ namespace SymptomTracker
             get => GetProperty<string>();
             set => SetProperty(value);
         }
+        public string DisplayName
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+        public bool IsSignUp
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
         #endregion
 
         #region Commands
@@ -36,15 +54,28 @@ namespace SymptomTracker
 
         private async void OnLoginClick()
         {
-           var Result = await FirebaseBll.Login(Email, Password);
+            OperatingResult<bool> Result;
+            if (IsSignUp)
+                Result = await FirebaseBll.Registrieren(Email, Password, DisplayName);
+            else
+                Result = await FirebaseBll.Login(Email, Password);
             Validate(Result);
-            if(Result.Result)
-               await Shell.Current.Navigation.PopAsync();
+            if (Result.Result)
+                await Shell.Current.Navigation.PopAsync();
         }
 
-        private void OnSignUpClick()
+        private async void OnSignUpClick()
         {
+            await Shell.Current.Navigation.PushAsync(new LoginPage()
+            {
+                BindingContext = new LoginViewModel(true)
+            });
+            var Login = Shell.Current.Navigation.NavigationStack.First(t =>
+            {
+                return t != null && t.GetType() == typeof(LoginPage);
 
+            });
+            Shell.Current.Navigation.RemovePage(Login);
         }
     }
 }
