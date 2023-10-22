@@ -12,11 +12,18 @@ namespace SymptomTracker
 {
     internal class ViewModelBase : DaedalinBaseViewModel
     {
+        private static FirebaseBll m_FirebaseBll;
 
-        public FirebaseBll m_FirebaseBll { get; set; }
-        public FirebaseBll FirebaseBll
+        public ViewModelBase() : base() { }
+
+        public static FirebaseBll FirebaseBll
         {
-            get => m_FirebaseBll == null ? new FirebaseBll() : m_FirebaseBll;
+            get
+            {
+                if (m_FirebaseBll == null)
+                    m_FirebaseBll = new FirebaseBll();
+                return m_FirebaseBll;
+            }
         }
 
         public void Validate<T>(OperatingResult<T> operatingResult)
@@ -27,7 +34,7 @@ namespace SymptomTracker
         {
             if (!operatingResult.Success)
             {
-                Shell.Current.DisplayAlert("Fehler: "+operatingResult.Division, operatingResult.Message,"Ok");
+                Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
                 return;
             }
 

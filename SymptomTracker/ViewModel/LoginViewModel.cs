@@ -13,6 +13,7 @@ namespace SymptomTracker
         {
             LoginClick = new RelayCommand(OnLoginClick);
             SignUpClick = new RelayCommand(OnSignUpClick);
+            ViewTitle = "Login";
         }
 
         #region Propertys
