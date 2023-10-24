@@ -23,4 +23,8 @@
 	  <PackageReference Include="FirebaseDatabase.net" Version="4.2.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\SymptomTracker.Utils\SymptomTracker.Utils.csproj" />
+	</ItemGroup>
+
 </Project>

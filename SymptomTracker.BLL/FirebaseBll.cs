@@ -1,13 +1,16 @@
 ﻿using Firebase.Database;
 using Firebase.Auth;
 using Daedalin.Core.OperationResult;
+using SymptomTracker.Utils.Entities;
+using Firebase.Database.Query;
+using System.Text.Json;
 
 namespace SymptomTracker.BLL
 {
     public class FirebaseBll
     {
         #region Needs
-        private const string RealtimeDB_URL = "";
+        private const string RealtimeDB_URL = "https://symptomtracker-0702-default-rtdb.europe-west1.firebasedatabase.app/";
         private FirebaseAuthClient m_firebaseAuthClient;
         private FirebaseClient m_firebaseClient;
         #endregion
@@ -127,5 +130,73 @@ namespace SymptomTracker.BLL
 
             return OperatingResult.OK();
         }
+
+        public async Task<OperatingResult<List<string>>> GetLastTitles(eEventType eventType)
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<List<string>>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                var Titles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                                   .Child("Titles")
+                                                   .Child($"{(int)eventType}")
+                                                   .OnceSingleAsync<string>();
+
+                var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
+
+                if(EncryptPassword == null || Titles == null)
+                    return OperatingResult<List<string>>.OK(new List<string>());
+
+                var Base64 = Encrypt.DecryptMessage(Titles, EncryptPassword);
+
+                var List = JsonSerializer.Deserialize<List<string>>(Encrypt.Base64Decode(Base64));
+
+                return OperatingResult<List<string>>.OK(List);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<List<string>>.Fail(ex);
+            }
+        }
+
+        public async Task<OperatingResult> AddLastTitles(eEventType eventType, string Title)
+        {
+            try
+            {
+                var ClientRault = await GetLastTitles(eventType);
+                if (!ClientRault.Success)
+                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                var list = ClientRault.Result;
+
+                list.Add(Title);
+
+                var Base64 = Encrypt.Base64Encode(JsonSerializer.Serialize(list));
+
+                var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
+                if (EncryptPassword == null)
+                {
+                    EncryptPassword = Guid.NewGuid().ToString();
+                    await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
+                }
+
+                var Data = Encrypt.EncryptMessage(Base64, EncryptPassword);
+
+                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                      .Child("Titles")
+                                      .Child($"{(int)eventType}")
+                                      .PutAsync<string>(Data);
+
+                return OperatingResult.OK();
+            }
+            catch (Exception ex)
+            {
+                    return OperatingResult.Fail(ex);
+                }
+
+        }
+
     }
 }

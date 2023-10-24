@@ -8,10 +8,8 @@ namespace SymptomTracker
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainPage()
-            {
-                BindingContext = new MainViewModel()
-            });
+            MainPage = new AppShell();
+
         }
     }
 }
