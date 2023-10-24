@@ -26,23 +26,24 @@ namespace SymptomTracker
             }
         }
 
-        public void Validate<T>(OperatingResult<T> operatingResult)
+        public bool Validate<T>(OperatingResult<T> operatingResult)
         {
-            Validate(OperatingResult.StatusTransfer(operatingResult));
+            return Validate(OperatingResult.StatusTransfer(operatingResult));
         }
-        public void Validate(OperatingResult operatingResult)
+        public bool Validate(OperatingResult operatingResult)
         {
             if (!operatingResult.Success)
             {
                 Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
-                return;
+                return false;
             }
 
             if (!string.IsNullOrEmpty(operatingResult.Message))
             {
                 Shell.Current.DisplayAlert(operatingResult.Division, operatingResult.Message, "Ok");
-                return;
+                return false;
             }
+            return true;
         }
     }
 }

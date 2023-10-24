@@ -4,6 +4,8 @@ using Daedalin.Core.OperationResult;
 using SymptomTracker.Utils.Entities;
 using Firebase.Database.Query;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.VisualBasic;
 
 namespace SymptomTracker.BLL
 {
@@ -110,9 +112,143 @@ namespace SymptomTracker.BLL
             }
         }
         #endregion
+        #endregion      
+
+        #region GetLastTitles
+        public async Task<OperatingResult<List<string>>> GetLastTitles(eEventType eventType)
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<List<string>>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                var Titles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                                   .Child("Titles")
+                                                   .Child($"{(int)eventType}")
+                                                   .OnceSingleAsync<string>();
+
+                return await DecryptMessage<List<string>>(Titles);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<List<string>>.Fail(ex);
+            }
+        }
         #endregion
 
-        public async Task<OperatingResult> CreateFirebaseClient()
+        #region AddLastTitles
+        public async Task<OperatingResult> AddLastTitles(eEventType eventType, string Title)
+        {
+            try
+            {
+                var ClientRault = await GetLastTitles(eventType);
+                if (!ClientRault.Success)
+                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+                                
+                var list = ClientRault.Result == null ? new List<string>() : ClientRault.Result;
+
+                list.Add(Title);
+
+                string Data = await EncryptMessage(list);
+
+                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                      .Child("Titles")
+                                      .Child($"{(int)eventType}")
+                                      .PutAsync<string>(Data);
+
+                return OperatingResult.OK();
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult.Fail(ex);
+            }
+        }
+        #endregion
+        
+        #region GetDay
+        public async Task<OperatingResult<Day>> GetDay(DateTime Date)
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<Day>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                var Data = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                                   .Child("Dates")
+                                                   .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
+                                                   .OnceSingleAsync<string>();
+
+                return await DecryptMessage<Day>(Data);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<Day>.Fail(ex);
+            }
+        }
+        #endregion
+
+        #region UpdateDay
+        public async Task<OperatingResult> UpdateDay(Day day)
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                string Data = await EncryptMessage(day);
+
+                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                      .Child("Dates")
+                                      .Child($"{day.Date.Year}-{day.Date.Month}-{day.Date.Day}")
+                                      .PutAsync<string>(Data);
+
+                return OperatingResult.OK();
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult.Fail(ex);
+            }
+        }
+        #endregion
+
+        #region Priart
+        #region EncryptMessage
+        private static async Task<string> EncryptMessage(object data)
+        {
+            var Base64 = Encrypt.Base64Encode(JsonSerializer.Serialize(data));
+
+            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
+            if (EncryptPassword == null)
+            {
+                EncryptPassword = Guid.NewGuid().ToString();
+                await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
+            }
+
+            return Encrypt.EncryptMessage(Base64, EncryptPassword);
+        }
+        #endregion
+
+        #region DecryptMessage
+        private static async Task<OperatingResult<T>> DecryptMessage<T>(string Titles)
+        {
+            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
+
+            if (EncryptPassword == null || Titles == null)
+                return OperatingResult<T>.OK(default(T));
+
+            var Base64 = Encrypt.DecryptMessage(Titles, EncryptPassword);
+
+            var List = JsonSerializer.Deserialize<T>(Encrypt.Base64Decode(Base64));
+
+            return OperatingResult<T>.OK(List);
+        }
+        #endregion
+
+        #region CreateFirebaseClient
+        private async Task<OperatingResult> CreateFirebaseClient()
         {
             var LoginResult = await Login();
 
@@ -130,73 +266,7 @@ namespace SymptomTracker.BLL
 
             return OperatingResult.OK();
         }
-
-        public async Task<OperatingResult<List<string>>> GetLastTitles(eEventType eventType)
-        {
-            try
-            {
-                var ClientRault = await CreateFirebaseClient();
-                if (!ClientRault.Success)
-                    return OperatingResult<List<string>>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
-
-                var Titles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
-                                                   .Child("Titles")
-                                                   .Child($"{(int)eventType}")
-                                                   .OnceSingleAsync<string>();
-
-                var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
-
-                if(EncryptPassword == null || Titles == null)
-                    return OperatingResult<List<string>>.OK(new List<string>());
-
-                var Base64 = Encrypt.DecryptMessage(Titles, EncryptPassword);
-
-                var List = JsonSerializer.Deserialize<List<string>>(Encrypt.Base64Decode(Base64));
-
-                return OperatingResult<List<string>>.OK(List);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<List<string>>.Fail(ex);
-            }
-        }
-
-        public async Task<OperatingResult> AddLastTitles(eEventType eventType, string Title)
-        {
-            try
-            {
-                var ClientRault = await GetLastTitles(eventType);
-                if (!ClientRault.Success)
-                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
-
-                var list = ClientRault.Result;
-
-                list.Add(Title);
-
-                var Base64 = Encrypt.Base64Encode(JsonSerializer.Serialize(list));
-
-                var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
-                if (EncryptPassword == null)
-                {
-                    EncryptPassword = Guid.NewGuid().ToString();
-                    await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
-                }
-
-                var Data = Encrypt.EncryptMessage(Base64, EncryptPassword);
-
-                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
-                                      .Child("Titles")
-                                      .Child($"{(int)eventType}")
-                                      .PutAsync<string>(Data);
-
-                return OperatingResult.OK();
-            }
-            catch (Exception ex)
-            {
-                    return OperatingResult.Fail(ex);
-                }
-
-        }
-
+        #endregion
+        #endregion
     }
 }

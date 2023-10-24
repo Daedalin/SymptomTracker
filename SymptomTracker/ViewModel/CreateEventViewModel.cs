@@ -23,13 +23,14 @@ namespace SymptomTracker.ViewModel
                 new KeyValuePair<int, string>(3, "Stress")
             };
 
-            TitleSearchResults = new List<string>();
-            PerformSearch = new RelayCommand(OnPerformSearch);
-            SaveClick = new RelayCommand(OnSaveClick);
-            Title = String.Empty;
             Date = DateTime.Now;
-            StartTime = DateTime.Now.TimeOfDay;
+            Title = String.Empty;
+            m_EventType = eventType;
             EndTime = DateTime.Now.TimeOfDay;
+            StartTime = DateTime.Now.TimeOfDay;
+            TitleSearchResults = new List<string>();
+            SaveClick = new RelayCommand(OnSaveClick);
+            PerformSearch = new RelayCommand(OnPerformSearch);
 
             Task.Run(async () =>
             {
@@ -104,17 +105,39 @@ namespace SymptomTracker.ViewModel
                 OnPropertyChanged(nameof(TitleSearchResults));
             }
         }
-        private void OnSaveClick()
+        private async void OnSaveClick()
         {
-            new Event()
+            var dayResult = await FirebaseBll.GetDay(Date);
+            Validate(dayResult);
+
+            if (dayResult.Success)
             {
-                Name = Title,
-                EndTime = EndTime,
-                StartTime = StartTime,
-                EventType = m_EventType,
-                Description = Description,
-            };
-            
+                Day day;
+                if (dayResult.Result == null)
+                {
+                    day = new Day();
+                    day.Date = Date;
+                    day.IsHoliday = Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Saturday;
+                }
+                else
+                    day = dayResult.Result;
+
+                var newEvent = new Event()
+                {
+                    Name = Title,
+                    EndTime = EndTime,
+                    StartTime = StartTime,
+                    EventType = m_EventType,
+                    Description = Description,
+                };
+
+                day.Events.Add(newEvent);
+
+                var Result = await FirebaseBll.UpdateDay(day);
+                if(Validate(Result))
+                    await Shell.Current.Navigation.PopAsync();
+
+            }
         }
     }
 }

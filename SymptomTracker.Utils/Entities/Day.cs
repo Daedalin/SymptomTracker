@@ -13,7 +13,7 @@ namespace SymptomTracker.Utils.Entities
             Events = new List<Event>();
         }
 
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         public bool IsHoliday { get; set; }
         public List<Event> Events { get; set; }
     }
