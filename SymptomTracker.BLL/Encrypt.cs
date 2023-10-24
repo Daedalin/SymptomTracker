@@ -28,7 +28,7 @@ namespace SymptomTracker.BLL
         /// <param name="password">Passwort mit dem der String verschlüsselt werden soll</param>
         /// <returns>Den verschlüsselten String</returns>
         public static string EncryptMessage(string plainMessage, string password)
-        {
+        {           
             TripleDESCryptoServiceProvider des = new TripleDESCryptoServiceProvider();
             des.IV = new byte[8];
             PasswordDeriveBytes pdb = new PasswordDeriveBytes(password, new byte[0]);

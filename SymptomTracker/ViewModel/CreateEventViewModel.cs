@@ -26,6 +26,7 @@ namespace SymptomTracker.ViewModel
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
+            Description = String.Empty;
             EndTime = DateTime.Now.TimeOfDay;
             ViewTitle = "Ereignis erstellen";
             StartTime = DateTime.Now.TimeOfDay;
