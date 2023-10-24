@@ -12,11 +12,16 @@ namespace SymptomTracker.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
+
         public MainViewModel()
         {
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
 
+            Shell.Current.Navigation.PushAsync(new LoginPage()
+            {
+                BindingContext = new LoginViewModel()
+            });
         }
 
         #region Command

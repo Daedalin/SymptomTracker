@@ -27,6 +27,7 @@ namespace SymptomTracker.ViewModel
             Title = String.Empty;
             m_EventType = eventType;
             EndTime = DateTime.Now.TimeOfDay;
+            ViewTitle = "Ereignis erstellen";
             StartTime = DateTime.Now.TimeOfDay;
             TitleSearchResults = new List<string>();
             SaveClick = new RelayCommand(OnSaveClick);
@@ -36,7 +37,7 @@ namespace SymptomTracker.ViewModel
             {
                 var TitleResult = await FirebaseBll.GetLastTitles(eventType);
                 Validate(TitleResult);
-                m_Titles = TitleResult.Result;
+                m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
                 OnPerformSearch();
             }).GetAwaiter().GetResult();
         }
@@ -134,8 +135,16 @@ namespace SymptomTracker.ViewModel
                 day.Events.Add(newEvent);
 
                 var Result = await FirebaseBll.UpdateDay(day);
-                if(Validate(Result))
+                if (Validate(Result))
+                {
+                    if (!m_Titles.Contains(Title))
+                    {
+                        var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
+                        Validate(AddTitlesResult);
+                    }
+
                     await Shell.Current.Navigation.PopAsync();
+                }
 
             }
         }

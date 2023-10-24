@@ -20,7 +20,7 @@
                     Padding="10"
                     Command="{Binding CreateEventClick}"
                     CommandParameter="2"/>
-            <Button Text="Symptom eintragen" 
+            <Button Text="Stress eintragen" 
                     Padding="10"
                     Command="{Binding CreateEventClick}"
                     CommandParameter="3"/>
