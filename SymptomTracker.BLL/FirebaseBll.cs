@@ -218,16 +218,16 @@ namespace SymptomTracker.BLL
         #region EncryptMessage
         private static async Task<string> EncryptMessage(object data)
         {
-            var Base64 = Encrypt.Base64Encode(JsonSerializer.Serialize(data));
+            var Base64 = Cryptography.Base64Encode(JsonSerializer.Serialize(data));
 
             var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
             if (EncryptPassword == null)
             {
-                EncryptPassword = Guid.NewGuid().ToString();
+                EncryptPassword = Guid.NewGuid().ToString().Replace("-","");
                 await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
             }
 
-            return Encrypt.EncryptMessage(Base64, EncryptPassword);
+            return Cryptography.Encrypt(Base64, EncryptPassword);
         }
         #endregion
 
@@ -239,9 +239,9 @@ namespace SymptomTracker.BLL
             if (EncryptPassword == null || Titles == null)
                 return OperatingResult<T>.OK(default(T));
 
-            var Base64 = Encrypt.DecryptMessage(Titles, EncryptPassword);
+            var Base64 = Cryptography.Decrypt(Titles, EncryptPassword);
 
-            var List = JsonSerializer.Deserialize<T>(Encrypt.Base64Decode(Base64));
+            var List = JsonSerializer.Deserialize<T>(Cryptography.Base64Decode(Base64));
 
             return OperatingResult<T>.OK(List);
         }
