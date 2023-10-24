@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+  <include domain="sharedpref" path="."/>
+  <exclude domain="sharedpref" path="${applicationId}.mauiessentials.xml"/>
+</full-backup-content>
+
+<!--
+Exclude the SecureStorage
+https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/storage/secure-storage?tabs=android
+-->

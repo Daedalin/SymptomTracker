@@ -49,12 +49,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\xml\auto_backup_rules.xml" />
+	  <None Remove="Resources\Images\day_overview.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Daedalin.Core" Version="1.4.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\SymptomTracker.BLL\SymptomTracker.BLL.csproj" />
+	  <ProjectReference Include="..\SymptomTracker.Utils\SymptomTracker.Utils.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

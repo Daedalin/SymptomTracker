@@ -16,9 +16,14 @@ namespace SymptomTracker
         {
             IsSignUp = _IsSignUp;
             if (IsSignUp)
+            {
                 ViewTitle = "Regestrieren";
+            }
             else
+            {
+                HasLogin();
                 ViewTitle = "Login";
+            }
             LoginClick = new RelayCommand(OnLoginClick);
             SignUpClick = new RelayCommand(OnSignUpClick);
 
@@ -52,18 +57,30 @@ namespace SymptomTracker
         public RelayCommand SignUpClick { get; set; }
         #endregion
 
+        #region Methods
+        private async void HasLogin()
+        {
+            var Result = await FirebaseBll.Login();
+            Validate(Result);
+            if (Result.Result)
+                await Shell.Current.Navigation.PopAsync();
+        }
+
+        #region OnLoginClick
         private async void OnLoginClick()
         {
             OperatingResult<bool> Result;
             if (IsSignUp)
-                Result = await FirebaseBll.Registrieren(Email, Password, DisplayName);
+                Result = await FirebaseBll.CreateUser(Email, Password, DisplayName);
             else
                 Result = await FirebaseBll.Login(Email, Password);
             Validate(Result);
             if (Result.Result)
                 await Shell.Current.Navigation.PopAsync();
         }
+        #endregion
 
+        #region OnSignUpClick
         private async void OnSignUpClick()
         {
             await Shell.Current.Navigation.PushAsync(new LoginPage()
@@ -77,5 +94,7 @@ namespace SymptomTracker
             });
             Shell.Current.Navigation.RemovePage(Login);
         }
+        #endregion
+#endregion
     }
 }

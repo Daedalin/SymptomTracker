@@ -1,4 +1,6 @@
-﻿namespace SymptomTracker
+﻿using SymptomTracker.ViewModel;
+
+namespace SymptomTracker
 {
     public partial class App : Application
     {
@@ -6,7 +8,10 @@
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+            MainPage = new NavigationPage(new MainPage()
+            {
+                BindingContext = new MainViewModel()
+            });
         }
     }
 }
