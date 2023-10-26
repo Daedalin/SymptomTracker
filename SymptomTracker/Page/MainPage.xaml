@@ -27,6 +27,11 @@
             <Button Text="Tag anzeigen" 
                     Padding="10"
                     Command="{Binding ShowDayClick}"/>
+            <HorizontalStackLayout Padding="10">
+                <Entry Text="{Binding Key}"/>
+                <Button Text="Save"          
+                        Command="{Binding Save}"/>
+            </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

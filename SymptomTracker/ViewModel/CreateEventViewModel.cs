@@ -15,14 +15,6 @@ namespace SymptomTracker.ViewModel
 
         public CreateEventViewModel(eEventType eventType)
         {
-            Typs = new List<KeyValuePair<int, string>>
-            {
-                new KeyValuePair<int, string>(0, "Nichts"),
-                new KeyValuePair<int, string>(1, "Essen"),
-                new KeyValuePair<int, string>(2, "Symtom"),
-                new KeyValuePair<int, string>(3, "Stress")
-            };
-
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
@@ -61,17 +53,17 @@ namespace SymptomTracker.ViewModel
             set => SetProperty(value);
         }
 
-        public List<KeyValuePair<int, string>> Typs { get; set; }
+        public List<KeyValuePair<eEventType, string>> Typs { get => Enums.EventType; }
 
-        public KeyValuePair<int, string> SelectedType
+        public KeyValuePair<eEventType, string> SelectedType
         {
             get
             {
-                return Typs.FirstOrDefault(t => t.Key == (int)m_EventType);
+                return Typs.FirstOrDefault(t => t.Key == m_EventType);
             }
             set
             {
-                m_EventType = (eEventType)value.Key;
+                m_EventType = value.Key;
                 OnPropertyChanged();
             }
         }

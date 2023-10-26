@@ -17,6 +17,8 @@ namespace SymptomTracker.ViewModel
         {
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
+            Save = new RelayCommand(SetKey);
+            GetKey();
 
             Shell.Current.Navigation.PushAsync(new LoginPage()
             {
@@ -24,9 +26,16 @@ namespace SymptomTracker.ViewModel
             });
         }
 
+        public string Key
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+
         #region Command
         public RelayCommandPara CreateEventClick { get; set; }
         public RelayCommand ShowDayClick { get; set; }
+        public RelayCommand Save { get; set; }
         #endregion
 
         #region OnCreateEventClick
@@ -43,10 +52,32 @@ namespace SymptomTracker.ViewModel
         #endregion
 
         #region OnShowDayClick
-        public void OnShowDayClick()
+        public async void OnShowDayClick()
         {
-
+            await Shell.Current.Navigation.PushAsync(new DayPage()
+            {
+                BindingContext = new DayViewModel()
+            });
         }
         #endregion
+
+        private void GetKey()
+        {
+            Task.Run(async () =>
+            {
+                Key = await SecureStorage.Default.GetAsync("EncryptPassword");
+            });
+        }
+
+        private void SetKey()
+        {
+            Task.Run(() =>
+            {
+                SecureStorage.Default.SetAsync("EncryptPassword", Key).GetAwaiter().GetResult();
+                Key = String.Empty;
+                Task.Delay(1000).GetAwaiter().GetResult();
+                GetKey();
+            });
+        }
     }
 }

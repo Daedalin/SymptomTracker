@@ -2,10 +2,16 @@
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:dg="clr-namespace:Maui.DataGrid;assembly=Maui.DataGrid">
 
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+    </Style>
+
+    <Style TargetType="dg:DataGrid">
+        <!--<Setter Property="BorderColor" Value="{AppThemeBinding Dark=White, Light=Black}"/>
+        <Setter Property="BackgroundColor" Value="Transparent"/>-->
     </Style>
 
     <Style TargetType="IndicatorView">
