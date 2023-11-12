@@ -10,6 +10,7 @@
         <VerticalStackLayout
             Spacing="25"
             Padding="30,0"
+            MaximumWidthRequest="500"
             VerticalOptions="Center">
 
             <Button Text="Essen eintragen" 
@@ -27,12 +28,9 @@
             <Button Text="Tag anzeigen" 
                     Padding="10"
                     Command="{Binding ShowDayClick}"/>
-            <HorizontalStackLayout Padding="10">
-                <Entry Text="{Binding Key}"/>
-                <Button Text="Save"          
-                        Command="{Binding Save}"/>
-            </HorizontalStackLayout>
-
+            <Button Text="Einstellungen" 
+                    Padding="10"
+                    Command="{Binding ShowSettingsClick}"/>
         </VerticalStackLayout>
     </ScrollView>
 
