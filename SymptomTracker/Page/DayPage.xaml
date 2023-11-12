@@ -14,7 +14,7 @@
 
         <dg:DataGrid ItemsSource="{Binding Events}" 
                      SelectionEnabled="True"
-                     RowHeight="70" HeaderHeight="50" 
+                     RowHeight="70" HeaderHeight="50"                     
                      PageSize="5"
                      Grid.Row="1">
             <dg:DataGrid.Columns>
@@ -24,6 +24,12 @@
                 <dg:DataGridColumn Title="Von" PropertyName="StartTime" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Bis" PropertyName="EndTime" SortingEnabled="True"/>
             </dg:DataGrid.Columns>
+            <dg:DataGrid.RowsBackgroundColorPalette>
+                <dg:PaletteCollection>
+                    <Color>#C8C8C8</Color>
+                    <Color>#6E6E6E</Color>
+                </dg:PaletteCollection>
+            </dg:DataGrid.RowsBackgroundColorPalette>
         </dg:DataGrid>
     </Grid>
 </ContentPage>

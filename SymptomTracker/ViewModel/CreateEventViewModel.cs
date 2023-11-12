@@ -95,7 +95,7 @@ namespace SymptomTracker.ViewModel
         {
             if (m_Titles != null)
             {
-                TitleSearchResults = new List<string>(m_Titles.FindAll(t => t.Contains(Title)));
+                TitleSearchResults = new List<string>(m_Titles.FindAll(t => t != null && t.Contains(Title)));
                 OnPropertyChanged(nameof(TitleSearchResults));
             }
         }
@@ -130,7 +130,7 @@ namespace SymptomTracker.ViewModel
                 var Result = await FirebaseBll.UpdateDay(day);
                 if (Validate(Result))
                 {
-                    if (!m_Titles.Contains(Title))
+                    if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
                     {
                         var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
                         Validate(AddTitlesResult);

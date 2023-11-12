@@ -34,7 +34,10 @@ namespace SymptomTracker
         {
             if (!operatingResult.Success)
             {
-                Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
+                if (string.IsNullOrEmpty(operatingResult.Message))
+                    Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.ex.Message, "Ok");
+                else
+                    Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
                 return false;
             }
 

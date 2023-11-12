@@ -10,8 +10,7 @@
     </Style>
 
     <Style TargetType="dg:DataGrid">
-        <!--<Setter Property="BorderColor" Value="{AppThemeBinding Dark=White, Light=Black}"/>
-        <Setter Property="BackgroundColor" Value="Transparent"/>-->
+        <Setter Property="BorderColor" Value="{AppThemeBinding Dark={StaticResource Gray900}, Light={StaticResource Gray100}}"/>
     </Style>
 
     <Style TargetType="IndicatorView">
@@ -410,3 +409,4 @@
     </Style>
 
 </ResourceDictionary>
+    
