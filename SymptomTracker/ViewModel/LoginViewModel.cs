@@ -26,7 +26,6 @@ namespace SymptomTracker
             }
             LoginClick = new RelayCommand(OnLoginClick);
             SignUpClick = new RelayCommand(OnSignUpClick);
-
         }
 
         #region Propertys
@@ -76,7 +75,7 @@ namespace SymptomTracker
                 Result = await FirebaseBll.Login(Email, Password);
             Validate(Result);
             if (Result.Result)
-                await Shell.Current.Navigation.PopAsync();
+                await Shell.Current.Navigation.PopAsync(true);
         }
         #endregion
 
@@ -87,12 +86,7 @@ namespace SymptomTracker
             {
                 BindingContext = new LoginViewModel(true)
             });
-            var Login = Shell.Current.Navigation.NavigationStack.First(t =>
-            {
-                return t != null && t.GetType() == typeof(LoginPage);
-
-            });
-            Shell.Current.Navigation.RemovePage(Login);
+            ((AppShell) Shell.Current).RemovePage<LoginPage>();
         }
         #endregion
 #endregion

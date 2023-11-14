@@ -18,12 +18,6 @@ namespace SymptomTracker.ViewModel
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
-
-
-            Shell.Current.Navigation.PushAsync(new LoginPage()
-            {
-                BindingContext = new LoginViewModel()
-            });
         }
 
 

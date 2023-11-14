@@ -1,4 +1,5 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
+using SymptomTracker.Page;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SymptomTracker.ViewModel
         {
             ViewTitle = "Einstellungen";
             SaveClick = new RelayCommand(SetKey);
-            LogOutClick = new RelayCommand(() => FirebaseBll.Logout());
+            LogOutClick = new RelayCommand(OnLogOutClick);
             GetKey();
         }
 
@@ -24,6 +25,12 @@ namespace SymptomTracker.ViewModel
         }
         public RelayCommand SaveClick { get; set; }
         public RelayCommand LogOutClick { get; set; }
+
+        private void OnLogOutClick()
+        {
+            Shell.Current.Navigation.PopAsync(false);
+            FirebaseBll.Logout();
+        }
 
         #region Get Key
         private void GetKey()

@@ -1,6 +1,7 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using Daedalin.Core.OperationResult;
 using SymptomTracker.BLL;
+using SymptomTracker.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,20 @@ namespace SymptomTracker
     internal class ViewModelBase : DaedalinBaseViewModel
     {
         private static FirebaseBll m_FirebaseBll;
+        public string m_ViewModel;
 
-        public ViewModelBase() : base() { }
+        public ViewModelBase() : base() 
+        {
+            m_ViewModel = this.GetType().Name;
+
+            if(m_ViewModel == nameof(MainViewModel))
+            {
+                FirebaseBll.PlsLogin += PlsLogin;
+            }
+
+            HasLogin();
+        }
+               
 
         public static FirebaseBll FirebaseBll
         {
@@ -26,6 +39,7 @@ namespace SymptomTracker
             }
         }
 
+        #region Validate
         public bool Validate<T>(OperatingResult<T> operatingResult)
         {
             return Validate(OperatingResult.StatusTransfer(operatingResult));
@@ -47,6 +61,22 @@ namespace SymptomTracker
                 return false;
             }
             return true;
+        }
+        #endregion
+
+        private async void HasLogin()
+        {
+            var Result = await FirebaseBll.Login();
+            Validate(Result);
+            if (!Result.Result && m_ViewModel != nameof(LoginViewModel))
+                PlsLogin();
+        }
+        private void PlsLogin()     
+        {
+            Shell.Current.Navigation.PushAsync(new LoginPage()
+            {
+                BindingContext = new LoginViewModel()
+            });
         }
     }
 }

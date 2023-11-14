@@ -9,6 +9,7 @@ using Microsoft.VisualBasic;
 
 namespace SymptomTracker.BLL
 {
+    public delegate void SampleEventHandler();
     public class FirebaseBll
     {
         #region Needs
@@ -16,6 +17,8 @@ namespace SymptomTracker.BLL
         private FirebaseAuthClient m_firebaseAuthClient;
         private FirebaseClient m_firebaseClient;
         #endregion
+
+        public event SampleEventHandler PlsLogin;
 
         #region All About Login
         #region CreateUser
@@ -25,7 +28,7 @@ namespace SymptomTracker.BLL
             {
                 if (m_firebaseAuthClient == null)
                     m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
-                else
+                else if(m_firebaseAuthClient.User != null)
                     m_firebaseAuthClient.SignOut();
 
                 await m_firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(EMail, Password, UserName);
@@ -98,16 +101,21 @@ namespace SymptomTracker.BLL
             try
             {
                 if (m_firebaseAuthClient?.User == null)
+                {
+                    PlsLogin?.Invoke();
                     return OperatingResult<bool>.OK(true);
+                }
 
                 SecureStorage.Default.Remove("EMail");
                 SecureStorage.Default.Remove("Password");
 
                 m_firebaseAuthClient.SignOut();
+                PlsLogin?.Invoke();
                 return OperatingResult<bool>.OK(true);
             }
             catch (Exception ex)
             {
+                PlsLogin?.Invoke();
                 return OperatingResult<bool>.Fail(ex, nameof(Login));
             }
         }
