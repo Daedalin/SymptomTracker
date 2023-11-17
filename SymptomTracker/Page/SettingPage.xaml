@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SymptomTracker.Page.SettingPage"
              Title="{Binding ViewTitle}">
-    <ScrollView>
+    <Grid>
         <VerticalStackLayout
             x:Name="SettingsRoot"
             Spacing="25"
@@ -17,6 +17,8 @@
                 <HorizontalStackLayout>
                     <Entry Text="{Binding Key,Mode=TwoWay}"
                            Margin="0,0,10,0"
+                           MinimumWidthRequest="200"
+                           MaximumWidthRequest="300"  
                            Placeholder="Key"
                            FontSize="18"/>
                     <Button Text="Save"          
@@ -30,5 +32,5 @@
                     CommandParameter="1"/>
             </VerticalStackLayout>
         </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 </ContentPage>
