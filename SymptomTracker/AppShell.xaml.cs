@@ -7,27 +7,20 @@
             InitializeComponent();
         }
 
-        protected override async void OnNavigating(ShellNavigatingEventArgs args)
+        protected override void OnNavigating(ShellNavigatingEventArgs args)
         {
-            base.OnNavigating(args);
-
-            var hasLogin = await HasLogin();
-            if (hasLogin)
-                return;
-
-            if ((args.Source == ShellNavigationSource.Pop || args.Source == ShellNavigationSource.PopToRoot) &&
-                 args.Current.Location.ToString().Contains("LoginPage"))
+            var hasLogin = ViewModelBase.FirebaseBll.HasLogin;
+            if (!hasLogin && (args.Source == ShellNavigationSource.Pop || args.Source == ShellNavigationSource.PopToRoot))
             {
-                args.Cancel();
+                if (args.Current.Location.OriginalString.Contains("LoginPage"))
+                {
+                    args.Cancel();
+                    return;
+                }
             }
-        }
 
-        private async Task<bool> HasLogin()
-        {
-            var Result = await ViewModelBase.FirebaseBll.Login();
-            return Result.Success && Result.Result;
+            base.OnNavigating(args);
         }
-
 
         public void RemovePage<T>()
         {

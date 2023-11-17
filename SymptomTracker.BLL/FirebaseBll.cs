@@ -21,6 +21,8 @@ namespace SymptomTracker.BLL
 
         public event SampleEventHandler PlsLogin;
 
+        public bool HasLogin { get => m_firebaseAuthClient?.User != null; }
+
         #region All About Login
         #region CreateUser
         public async Task<OperatingResult<bool>> CreateUser(string EMail, string Password, string UserName)
@@ -73,8 +75,8 @@ namespace SymptomTracker.BLL
                 m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
                 await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, Password);
 
-                //await SecureStorage.Default.SetAsync("EMail", EMail);
-                //await SecureStorage.Default.SetAsync("Password", Password);
+                await SecureStorage.Default.SetAsync("EMail", EMail);
+                await SecureStorage.Default.SetAsync("Password", Password);
 
                 return OperatingResult<bool>.OK(true);
             }
