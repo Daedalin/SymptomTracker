@@ -1,5 +1,7 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using Daedalin.Core.OperationResult;
+using SymptomTracker.Page;
+using SymptomTracker.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,8 +62,7 @@ namespace SymptomTracker
         private async void HasLogin()
         {
             var Result = await FirebaseBll.Login();
-            Validate(Result);
-            if (Result.Result)
+            if (Validate(Result) && Result.Result)
                 await Shell.Current.Navigation.PopAsync();
         }
 
@@ -73,9 +74,20 @@ namespace SymptomTracker
                 Result = await FirebaseBll.CreateUser(Email, Password, DisplayName);
             else
                 Result = await FirebaseBll.Login(Email, Password);
-            Validate(Result);
-            if (Result.Result)
-                await Shell.Current.Navigation.PopAsync(true);
+            if (Validate(Result) && Result.Result)
+            {
+                var CheckKey = await FirebaseBll.IsKeyOK();
+                if (Validate(CheckKey) && !CheckKey.Result)
+                {
+                    await Shell.Current.Navigation.PushAsync(new SettingPage()
+                    {
+                        BindingContext = new SettingsViewModel()
+                    });
+                    ((AppShell)Shell.Current).RemovePage<LoginPage>();
+                }
+                else
+                    await Shell.Current.Navigation.PopAsync();
+            }
         }
         #endregion
 
@@ -86,9 +98,9 @@ namespace SymptomTracker
             {
                 BindingContext = new LoginViewModel(true)
             });
-            ((AppShell) Shell.Current).RemovePage<LoginPage>();
+            ((AppShell)Shell.Current).RemovePage<LoginPage>();
         }
         #endregion
-#endregion
+        #endregion
     }
 }

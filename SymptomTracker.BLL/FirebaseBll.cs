@@ -6,6 +6,7 @@ using Firebase.Database.Query;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.VisualBasic;
+using Daedalin.Core.Enum;
 
 namespace SymptomTracker.BLL
 {
@@ -28,7 +29,7 @@ namespace SymptomTracker.BLL
             {
                 if (m_firebaseAuthClient == null)
                     m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
-                else if(m_firebaseAuthClient.User != null)
+                else if (m_firebaseAuthClient.User != null)
                     m_firebaseAuthClient.SignOut();
 
                 await m_firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(EMail, Password, UserName);
@@ -72,8 +73,8 @@ namespace SymptomTracker.BLL
                 m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
                 await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, Password);
 
-                await SecureStorage.Default.SetAsync("EMail", EMail);
-                await SecureStorage.Default.SetAsync("Password", Password);
+                //await SecureStorage.Default.SetAsync("EMail", EMail);
+                //await SecureStorage.Default.SetAsync("Password", Password);
 
                 return OperatingResult<bool>.OK(true);
             }
@@ -84,7 +85,7 @@ namespace SymptomTracker.BLL
                     Success = true,
                     Result = false,
                     Message = "Benutzername und Passwort simmen nicht über ein.",
-                    MessageType = Daedalin.Core.Enum.eMessageType.Warning,
+                    MessageType = eMessageType.Warning,
                     Division = "Login"
                 };
             }
@@ -120,7 +121,36 @@ namespace SymptomTracker.BLL
             }
         }
         #endregion
-        #endregion      
+        #endregion
+
+        #region IsKeyOK
+        public async Task<OperatingResult<bool>> IsKeyOK()
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<bool>.Fail(ClientRault.Message, eMessageType.Error);
+
+                var AllTypsOfTitles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                                            .Child("Titles")
+                                                            .OnceSingleAsync<List<string>>();
+
+                var Titles = AllTypsOfTitles.FirstOrDefault(t => !string.IsNullOrEmpty(t));
+
+                if (string.IsNullOrEmpty(Titles))
+                    return OperatingResult<bool>.OK(true);
+
+                var result = await DecryptMessage<List<Strings>>(Titles);
+
+                return OperatingResult<bool>.OK(result.Success);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<bool>.Fail(ex);
+            }
+        }
+        #endregion
 
         #region GetLastTitles
         public async Task<OperatingResult<List<string>>> GetLastTitles(eEventType eventType)
@@ -153,7 +183,7 @@ namespace SymptomTracker.BLL
                 var ClientRault = await GetLastTitles(eventType);
                 if (!ClientRault.Success)
                     return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
-                                
+
                 var list = ClientRault.Result == null ? new List<string>() : ClientRault.Result;
 
                 list.Add(Title);
@@ -173,7 +203,7 @@ namespace SymptomTracker.BLL
             }
         }
         #endregion
-        
+
         #region GetDay
         public async Task<OperatingResult<Day>> GetDay(DateTime Date)
         {
@@ -223,6 +253,8 @@ namespace SymptomTracker.BLL
         #endregion
 
         #region Priart
+
+        #region Crypto
         #region EncryptMessage
         private static async Task<string> EncryptMessage(object data)
         {
@@ -231,7 +263,7 @@ namespace SymptomTracker.BLL
             var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
             if (EncryptPassword == null)
             {
-                EncryptPassword = Guid.NewGuid().ToString().Replace("-","");
+                EncryptPassword = Guid.NewGuid().ToString().Replace("-", "");
                 await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
             }
 
@@ -242,10 +274,12 @@ namespace SymptomTracker.BLL
         #region DecryptMessage
         private static async Task<OperatingResult<T>> DecryptMessage<T>(string Titles)
         {
-            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
-
-            if (EncryptPassword == null || Titles == null)
+            if (string.IsNullOrEmpty(Titles))
                 return OperatingResult<T>.OK(default(T));
+
+            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
+            if (string.IsNullOrEmpty(EncryptPassword))
+                return OperatingResult<T>.Fail("Es wurde Kein Key eingegeben.", eMessageType.Warning, nameof(DecryptMessage));
 
             var Base64 = Cryptography.Decrypt(Titles, EncryptPassword);
 
@@ -253,6 +287,7 @@ namespace SymptomTracker.BLL
 
             return OperatingResult<T>.OK(List);
         }
+        #endregion
         #endregion
 
         #region CreateFirebaseClient
