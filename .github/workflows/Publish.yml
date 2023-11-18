@@ -22,6 +22,8 @@ jobs:
         dotnet-version: 7.0.x
     - name: Install .NET Maui
       run: dotnet workload install maui
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3.13.0
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
