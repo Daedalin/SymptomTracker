@@ -24,6 +24,9 @@ jobs:
       run: dotnet workload install maui
     - name: Setup Java JDK
       uses: actions/setup-java@v3.13.0
+      with:
+        java-version: 11.0
+        distribution: microsoft        
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
