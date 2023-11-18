@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -32,10 +32,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build SymptomTracker/SymptomTracker.csproj -c Release -f net7.0-android  /p:AndroidSigningKeyStore=myapp.keystore /p:AndroidSigningKeyAlias=robin /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
-    - name: upload artifact to Firebase App Distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1
-      with:
-        appId: ${{secrets.FIREBASE_APP_ID}}
-        serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-        releaseNotesFile: releaseNotesFile.txt
-        file: ./**/de.daedalin.SymptomTracker-Signed.apk
+   # - name: upload artifact to Firebase App Distribution
+    #  uses: wzieba/Firebase-Distribution-Github-Action@v1
+     # with:
+        #appId: ${{secrets.FIREBASE_APP_ID}}
+        #serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+        #releaseNotesFile: releaseNotesFile.txt
+        #file: ./**/de.daedalin.SymptomTracker-Signed.apk
