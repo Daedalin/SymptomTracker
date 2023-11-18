@@ -1,0 +1,6 @@
+Das ist der erste Release der über GitHub Actions erstellt wurde.
+
+Änderungen:
+Das UI in den Einstellungne wurde angepast
+Anmelde zwang funktioniert nun auch auf Android
+Key wird nun geprüft ob er gültig ist 

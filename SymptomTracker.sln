@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker", "SymptomTr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker.BLL", "SymptomTracker.BLL\SymptomTracker.BLL.csproj", "{B0BC230E-E60D-4791-8725-1864E40AF3CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymptomTracker.Utils", "SymptomTracker.Utils\SymptomTracker.Utils.csproj", "{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker.Utils", "SymptomTracker.Utils\SymptomTracker.Utils.csproj", "{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{45077B2E-91B1-4ED7-B87D-3FD93D75BB66}"
+	ProjectSection(SolutionItems) = preProject
+		releaseNotes.txt = releaseNotes.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
