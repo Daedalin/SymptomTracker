@@ -16,10 +16,6 @@ jobs:
       run: |
         echo "${{ secrets.KEYSTORE_FILE }}" > myapp.keystore.asc
         gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD_GPG }}" --batch myapp.keystore.asc > myapp.keystore
-    - name: Service User
-      run: |
-        echo "${{ secrets.CREDENTIAL_FILE_CONTENT }}" > symptomtracker-0702-f8f0830ad1e9.json.asc
-        gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD_GPG }}" --batch symptomtracker-0702-f8f0830ad1e9.json.asc > symptomtracker-0702-f8f0830ad1e9.json
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -53,6 +49,6 @@ jobs:
           uses: wzieba/Firebase-Distribution-Github-Action@v1
           with:
               appId: ${{secrets.FIREBASE_APP_ID}}
-              serviceCredentialsFileContent: symptomtracker-0702-f8f0830ad1e9.json
+              serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
               releaseNotesFile: releaseNotes.txt
-              file: de.daedalin.SymptomTracker-Signed.apk
+              file: ./**/de.daedalin.SymptomTracker-Signed.apk
