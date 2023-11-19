@@ -54,4 +54,4 @@ jobs:
               appId: ${{secrets.FIREBASE_APP_ID}}
               serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
               releaseNotesFile: releaseNotes.txt
-              file: de.daedalin.SymptomTracker-Signed.apk
+              file: SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
