@@ -39,9 +39,7 @@ jobs:
     - name: Setup Firebase cli
       run: |
         npm install -g firebase-tools
-    - name: Login Firebase cli
-      run: |
-        set GOOGLE_APPLICATION_CREDENTIALS "${{ github.workspace }}\symptomtracker-0702-f8f0830ad1e9.json"
     - name: Uploade to App Distribution
       run: |
+        set GOOGLE_APPLICATION_CREDENTIALS="${{ github.workspace }}\symptomtracker-0702-f8f0830ad1e9.json"
         firebase appdistribution:distribute ./**/de.daedalin.SymptomTracker-Signed.apk --app ${{secrets.FIREBASE_APP_ID}} --testers-file releaseNotesFile.txt
