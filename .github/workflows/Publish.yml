@@ -39,6 +39,8 @@ jobs:
     - name: Setup Firebase cli
       run: |
         npm install -g firebase-tools
+    - name: Login Firebase cli
+      run: |
         set GOOGLE_APPLICATION_CREDENTIALS "${GITHUB_WORKSPACE}/symptomtracker-0702-f8f0830ad1e9.json"
     - name: Uploade to App Distribution
       run: |
