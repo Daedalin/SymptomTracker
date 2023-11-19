@@ -8,7 +8,6 @@ on:
   
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
@@ -44,6 +43,7 @@ jobs:
 
   uploade:
       runs-on: ubuntu-latest
+      needs: build
       steps:
         - name: Download Artifact
           uses: actions/download-artifact@v3
