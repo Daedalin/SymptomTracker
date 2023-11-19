@@ -39,11 +39,20 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
-        path: |
-          ./**/de.daedalin.SymptomTracker-Signed.apk
+        name: SignedApk
+        path: ./**/de.daedalin.SymptomTracker-Signed.apk
 
   uploade:
-      runs-on: windows-latest
+      runs-on: ubuntu-latest
       steps:
-        - name: Upload Artifact
-          uses: actions/upload-artifact@v3
+        - name: Download Artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: SignedApk
+        - name: upload artifact to Firebase App Distribution
+          uses: wzieba/Firebase-Distribution-Github-Action@v1
+          with:
+              appId: ${{secrets.FIREBASE_APP_ID}}
+              serviceCredentialsFileContent: symptomtracker-0702-f8f0830ad1e9.json
+              releaseNotesFile: releaseNotes.txt
+              file: de.daedalin.SymptomTracker-Signed.apk
