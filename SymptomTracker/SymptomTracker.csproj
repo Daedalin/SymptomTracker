@@ -15,7 +15,7 @@
 		<ApplicationTitle>SymptomTracker</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.symptomtracker</ApplicationId>
+		<ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 		<ApplicationIdGuid>f31b9988-1f95-4655-bade-4ff7e6632feb</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -30,7 +30,17 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
+  <!-- Push notification -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
+    <GoogleServicesJson Include="google-services.json" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios' OR '$(TargetFramework)' == 'net7.0-android'">
+    <PackageReference Include="Plugin.Firebase" Version="2.0.3" />
+    <PackageReference Include="Plugin.Firebase.Crashlytics" Version="2.0.1" />
+  </ItemGroup>
+
+  <!--ApplicationTitle & ApplicationId -->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
 	  <ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
 	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>

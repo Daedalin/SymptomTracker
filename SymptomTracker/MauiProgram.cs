@@ -4,8 +4,8 @@ namespace SymptomTracker
 {
     public static class MauiProgram
     {
-        public static MauiApp CreateMauiApp()
-        {
+        public static MauiAppBuilder CreateDefaultMauiAppBuilder()
+        {            
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -19,7 +19,7 @@ namespace SymptomTracker
 		builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            return builder;
         }
     }
 }
