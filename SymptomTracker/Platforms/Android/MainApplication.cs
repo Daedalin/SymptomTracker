@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Runtime;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace SymptomTracker
 {
@@ -11,6 +12,16 @@ namespace SymptomTracker
         {
         }
 
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        protected override MauiApp CreateMauiApp()
+        {
+            var builder = MauiProgram.CreateDefaultMauiAppBuilder();
+                                     //.RegisterFirebaseServices();
+
+
+            return builder.Build();
+        }
+
+       
+
     }
 }

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "191762863958",
+    "firebase_url": "https://symptomtracker-0702-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "symptomtracker-0702",
+    "storage_bucket": "symptomtracker-0702.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191762863958:android:55133cc84e318f901de8f7",
+        "android_client_info": {
+          "package_name": "de.daedalin.SymptomTracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBG7FuOQ_YC1WiU1nO6YLX66ZtUUxPq6uM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

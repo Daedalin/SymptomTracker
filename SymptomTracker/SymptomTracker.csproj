@@ -15,7 +15,7 @@
 		<ApplicationTitle>SymptomTracker</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.symptomtracker</ApplicationId>
+		<ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 		<ApplicationIdGuid>f31b9988-1f95-4655-bade-4ff7e6632feb</ApplicationIdGuid>
 
 		<!-- Versions -->
