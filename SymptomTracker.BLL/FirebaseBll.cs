@@ -134,6 +134,11 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<bool>.Fail(ClientRault.Message, eMessageType.Error);
 
+                var Data = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid).OnceSingleAsync<object>();
+
+                if (Data == null)
+                    return OperatingResult<bool>.OK(true, "Noch keine Daten Vorhanden", eMessageType.Info);
+
                 var AllTypsOfTitles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
                                                             .Child("Titles")
                                                             .OnceSingleAsync<List<string>>();
@@ -143,7 +148,7 @@ namespace SymptomTracker.BLL
                 if (string.IsNullOrEmpty(Titles))
                     return OperatingResult<bool>.OK(true);
 
-                var result = await DecryptMessage<List<Strings>>(Titles);
+                var result = await DecryptMessage<List<string>>(Titles);
 
                 return OperatingResult<bool>.OK(result.Success);
             }
@@ -298,7 +303,7 @@ namespace SymptomTracker.BLL
             var LoginResult = await Login();
 
             if (!LoginResult.Result)
-                return OperatingResult.Fail("Nicht eingelogt.", Daedalin.Core.Enum.eMessageType.Info, "Firebase");
+                return OperatingResult.Fail("Nicht eingelogt.", eMessageType.Info, "Firebase");
 
             m_firebaseClient = new FirebaseClient(RealtimeDB_URL, new FirebaseOptions
             {

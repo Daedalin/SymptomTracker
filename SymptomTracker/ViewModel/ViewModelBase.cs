@@ -16,18 +16,18 @@ namespace SymptomTracker
         private static FirebaseBll m_FirebaseBll;
         public string m_ViewModel;
 
-        public ViewModelBase() : base() 
+        public ViewModelBase() : base()
         {
             m_ViewModel = this.GetType().Name;
 
-            if(m_ViewModel == nameof(MainViewModel))
+            if (m_ViewModel == nameof(MainViewModel))
             {
                 FirebaseBll.PlsLogin += PlsLogin;
             }
 
             HasLogin();
         }
-               
+
 
         public static FirebaseBll FirebaseBll
         {
@@ -40,24 +40,35 @@ namespace SymptomTracker
         }
 
         #region Validate
-        public bool Validate<T>(OperatingResult<T> operatingResult)
+        public bool Validate<T>(OperatingResult<T> operatingResult) => Validate<T>(operatingResult, true);
+
+        public bool Validate<T>(OperatingResult<T> operatingResult, bool ShMessage)
         {
-            return Validate(OperatingResult.StatusTransfer(operatingResult));
+            var result = OperatingResult.StatusTransfer(operatingResult);
+            //Bug fix
+            result.ex = operatingResult.ex;
+            return Validate(result, ShMessage);
         }
-        public bool Validate(OperatingResult operatingResult)
+
+        public bool Validate(OperatingResult operatingResult) => Validate(operatingResult, true);
+        public bool Validate(OperatingResult operatingResult, bool ShMessage)
         {
             if (!operatingResult.Success)
             {
-                if (string.IsNullOrEmpty(operatingResult.Message))
-                    Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.ex.Message, "Ok");
-                else
-                    Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
+                if (ShMessage)
+                {
+                    if (string.IsNullOrEmpty(operatingResult.Message))
+                        Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.ex.Message, "Ok");
+                    else
+                        Shell.Current.DisplayAlert("Fehler: " + operatingResult.Division, operatingResult.Message, "Ok");
+                }
                 return false;
             }
 
             if (!string.IsNullOrEmpty(operatingResult.Message))
             {
-                Shell.Current.DisplayAlert(operatingResult.Division, operatingResult.Message, "Ok");
+                if (ShMessage)
+                    Shell.Current.DisplayAlert(operatingResult.Division, operatingResult.Message, "Ok");
                 return false;
             }
             return true;
@@ -67,11 +78,11 @@ namespace SymptomTracker
         private async void HasLogin()
         {
             var Result = await FirebaseBll.Login();
-            Validate(Result);
+            Validate(Result, false);
             if (!Result.Result && m_ViewModel != nameof(LoginViewModel))
                 PlsLogin();
         }
-        private void PlsLogin()     
+        private void PlsLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage()
             {
