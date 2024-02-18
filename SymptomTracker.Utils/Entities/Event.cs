@@ -8,6 +8,7 @@ namespace SymptomTracker.Utils.Entities
 {
     public class Event
     {
+        public int ID { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public eEventType EventType { get; set; }

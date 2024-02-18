@@ -97,7 +97,9 @@
 	<ItemGroup>
 		<PackageReference Include="akgul.Maui.DataGrid" Version="3.0.0" />
 		<PackageReference Include="Daedalin.Core" Version="1.4.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.25.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="4.7.2" />
 		<PackageReference Include="System.ObjectModel" Version="4.3.0" />
 	</ItemGroup>
 

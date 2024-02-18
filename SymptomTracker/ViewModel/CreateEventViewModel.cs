@@ -5,35 +5,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SymptomTracker.ViewModel
 {
     internal class CreateEventViewModel : ViewModelBase
     {
+        private int m_Id;
         private eEventType m_EventType;
         private List<string> m_Titles;
 
+        public CreateEventViewModel(DateTime date, Event existingEvent)
+        {
+            Date = date;
+            m_Id = existingEvent.ID;
+            Title = existingEvent.Name;
+            EndTime = existingEvent.EndTime;
+            StartTime = existingEvent.StartTime;
+            m_EventType = existingEvent.EventType;
+            Description = existingEvent.Description;
+
+            __Ini();
+        }
+
         public CreateEventViewModel(eEventType eventType)
         {
+            m_Id = -1;
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
             Description = String.Empty;
             EndTime = DateTime.Now.TimeOfDay;
-            ViewTitle = "Ereignis erstellen";
             StartTime = DateTime.Now.TimeOfDay;
-            TitleSearchResults = new List<string>();
-            SaveClick = new RelayCommand(OnSaveClick);
-            PerformSearch = new RelayCommand(OnPerformSearch);
 
-            Task.Run(async () =>
-            {
-                var TitleResult = await FirebaseBll.GetLastTitles(eventType);
-                Validate(TitleResult);
-                m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
-                OnPerformSearch();
-            }).GetAwaiter().GetResult();
+            __Ini();
         }
+
 
         public DateTime Date
         {
@@ -75,7 +82,12 @@ namespace SymptomTracker.ViewModel
         public string SelectedTitle
         {
             get => GetProperty<string>();
-            set => SetProperty(value, () => SetProperty(value, nameof(Title)));
+            set
+            {
+                SetProperty(value);
+                if (value != null)
+                    SetProperty(value, nameof(Title));
+            }
         }
         public string Description
         {
@@ -91,11 +103,25 @@ namespace SymptomTracker.ViewModel
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
 
+        private async void __Ini()
+        {
+            ViewTitle = "Ereignis erstellen";
+            TitleSearchResults = new List<string>();
+
+            SaveClick = new RelayCommand(OnSaveClick);
+            PerformSearch = new RelayCommand(OnPerformSearch);
+
+            var TitleResult = await FirebaseBll.GetLastTitles(m_EventType);
+            Validate(TitleResult);
+            m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
+            OnPerformSearch();
+        }
+
         private void OnPerformSearch()
         {
             if (m_Titles != null)
             {
-                TitleSearchResults = new List<string>(m_Titles.FindAll(t => t != null && t.Contains(Title)));
+                TitleSearchResults = m_Titles.FindAll(t => t != null && t.Contains(Title ?? String.Empty)).ToList();
                 OnPropertyChanged(nameof(TitleSearchResults));
             }
         }
@@ -104,18 +130,21 @@ namespace SymptomTracker.ViewModel
             var dayResult = await FirebaseBll.GetDay(Date);
             Validate(dayResult);
 
-            if (dayResult.Success)
-            {
-                Day day;
-                if (dayResult.Result == null)
-                {
-                    day = new Day();
-                    day.Date = Date;
-                    day.IsHoliday = Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Saturday;
-                }
-                else
-                    day = dayResult.Result;
+            if (!dayResult.Success)
+                return;
 
+            Day day;
+            if (dayResult.Result == null)
+            {
+                day = new Day();
+                day.Date = Date;
+                day.IsHoliday = Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Saturday;
+            }
+            else
+                day = dayResult.Result;
+
+            if (m_Id == -1)
+            {
                 var newEvent = new Event()
                 {
                     Name = Title,
@@ -123,23 +152,33 @@ namespace SymptomTracker.ViewModel
                     StartTime = StartTime,
                     EventType = m_EventType,
                     Description = Description,
+                    ID = day.Events.Count() + 1,
                 };
-
                 day.Events.Add(newEvent);
+            }
+            else
+            {
+                var existingEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
+                existingEvent.Name = Title;
+                existingEvent.EndTime = EndTime;
+                existingEvent.StartTime = StartTime;
+                existingEvent.EventType = m_EventType;
+                existingEvent.Description = Description;
+            }
 
-                var Result = await FirebaseBll.UpdateDay(day);
-                if (Validate(Result))
+            var Result = await FirebaseBll.UpdateDay(day);
+            if (Validate(Result))
+            {
+                if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
                 {
-                    if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
-                    {
-                        var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
-                        Validate(AddTitlesResult);
-                    }
-
-                    await Shell.Current.Navigation.PopAsync();
+                    var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
+                    Validate(AddTitlesResult);
                 }
 
+                await Shell.Current.Navigation.PopAsync();
             }
+
+
         }
     }
 }
