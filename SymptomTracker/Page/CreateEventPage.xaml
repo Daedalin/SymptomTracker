@@ -2,18 +2,29 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SymptomTracker.Page.CreateEventPage"
+             xmlns:conv="clr-namespace:SymptomTracker.Converter"
              Title="{Binding ViewTitle}">
+    <ContentPage.Resources>
+        <conv:InverseBooleanConverter x:Key="InverseBoolean"/>
+    </ContentPage.Resources>
     <Grid>
         <VerticalStackLayout MaximumWidthRequest="700" Margin="20,0,20,20">
-            <!--DateTime-->
+            <!--Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
-                <VerticalStackLayout Margin="0,0,0,10">
+                <VerticalStackLayout Margin="0,0,5,0">
                     <Label FontFamily="Consolas" Text="Datum"/>
                     <DatePicker Date="{Binding Date}"  
                                 FontSize="18"
                                 MinimumWidthRequest="150"/>
                 </VerticalStackLayout>
-                <VerticalStackLayout Margin="10,0,0,10">
+                <VerticalStackLayout Margin="5,0,0,0">
+                    <Label FontFamily="Consolas" Text="Ganztägig"/>
+                    <CheckBox IsChecked="{Binding FullTime}"/>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <!--Time-->
+            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding FullTime,Converter={StaticResource InverseBoolean}}">
+                <VerticalStackLayout Margin="0,0,0,10">
                     <Label FontFamily="Consolas" Text="Von"/>
                     <TimePicker Time="{Binding StartTime}"
                                 FontSize="18"
@@ -74,6 +85,11 @@
                            MaximumWidthRequest="700"/>
                 </VerticalStackLayout>
             </VerticalStackLayout>
+
+            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsStress}">
+                <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
+                <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
             <Button Text="Speicher"
                     Margin="0,20,0,0"

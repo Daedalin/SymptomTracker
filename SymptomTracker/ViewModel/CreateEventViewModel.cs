@@ -20,10 +20,13 @@ namespace SymptomTracker.ViewModel
             Date = date;
             m_Id = existingEvent.ID;
             Title = existingEvent.Name;
-            EndTime = existingEvent.EndTime;
-            StartTime = existingEvent.StartTime;
+            FullTime = existingEvent.FullTime;
             m_EventType = existingEvent.EventType;
             Description = existingEvent.Description;
+            EndTime = existingEvent.EndTime ?? TimeSpan.Zero;
+            StartTime = existingEvent.StartTime ?? TimeSpan.Zero;
+            if (m_EventType == eEventType.Stress)
+                WorkRelated = (existingEvent as StressEvent)?.WorkRelated ?? false;
 
             __Ini();
         }
@@ -72,6 +75,7 @@ namespace SymptomTracker.ViewModel
             {
                 m_EventType = value.Key;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsStress));
             }
         }
         public string Title
@@ -99,6 +103,19 @@ namespace SymptomTracker.ViewModel
             get => GetProperty<List<string>>();
             set => SetProperty(value);
         }
+        public bool WorkRelated
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
+        public bool FullTime
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
+        public bool IsStress => m_EventType == eEventType.Stress;
 
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
@@ -143,28 +160,34 @@ namespace SymptomTracker.ViewModel
             else
                 day = dayResult.Result;
 
-            if (m_Id == -1)
-            {
-                var newEvent = new Event()
-                {
-                    Name = Title,
-                    EndTime = EndTime,
-                    StartTime = StartTime,
-                    EventType = m_EventType,
-                    Description = Description,
-                    ID = day.Events.Count() + 1,
-                };
-                day.Events.Add(newEvent);
-            }
+            Event newEvent;
+            if (m_Id != -1)
+                newEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
             else
             {
-                var existingEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
-                existingEvent.Name = Title;
-                existingEvent.EndTime = EndTime;
-                existingEvent.StartTime = StartTime;
-                existingEvent.EventType = m_EventType;
-                existingEvent.Description = Description;
+                if (m_EventType == eEventType.Stress)
+                {
+                    newEvent = new StressEvent()
+                    {
+                        WorkRelated = WorkRelated
+                    };
+                }
+                else
+                    newEvent = new Event();
+
+                day.Events.Add(newEvent);
+                newEvent.ID = day.Events.Count() + 1;
             }
+
+            newEvent.Name = Title;
+            newEvent.FullTime = FullTime;
+            newEvent.EventType = m_EventType;
+            newEvent.Description = Description;
+            newEvent.EndTime = !FullTime ? EndTime : null;
+            newEvent.StartTime = !FullTime ? StartTime : null;
+
+
+
 
             var Result = await FirebaseBll.UpdateDay(day);
             if (Validate(Result))
