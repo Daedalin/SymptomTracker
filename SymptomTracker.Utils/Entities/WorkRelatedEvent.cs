@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SymptomTracker.Utils.Entities
 {
-    public class StressEvent : Event
+    public class WorkRelatedEvent : Event
     {
         public bool WorkRelated { get; set; }
     }

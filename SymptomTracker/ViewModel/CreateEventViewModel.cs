@@ -25,8 +25,8 @@ namespace SymptomTracker.ViewModel
             Description = existingEvent.Description;
             EndTime = existingEvent.EndTime ?? TimeSpan.Zero;
             StartTime = existingEvent.StartTime ?? TimeSpan.Zero;
-            if (m_EventType == eEventType.Stress)
-                WorkRelated = (existingEvent as StressEvent)?.WorkRelated ?? false;
+            if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
+                WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
 
             __Ini();
         }
@@ -165,9 +165,9 @@ namespace SymptomTracker.ViewModel
                 newEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
             else
             {
-                if (m_EventType == eEventType.Stress)
+                if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
                 {
-                    newEvent = new StressEvent()
+                    newEvent = new WorkRelatedEvent()
                     {
                         WorkRelated = WorkRelated
                     };

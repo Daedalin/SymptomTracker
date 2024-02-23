@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SymptomTracker.Utils.Entities
 {
-    [JsonDerivedType(typeof(Event), typeDiscriminator: "Normal")]
-    [JsonDerivedType(typeof(StressEvent), typeDiscriminator: "Stress")]
+    [JsonDerivedType(typeof(Event), typeDiscriminator: nameof(Event))]
+    [JsonDerivedType(typeof(WorkRelatedEvent), typeDiscriminator: nameof(WorkRelatedEvent))]
     public class Event
     {
         public int ID { get; set; }
