@@ -62,7 +62,7 @@ namespace SymptomTracker
         private async void HasLogin()
         {
             var Result = await FirebaseBll.Login();
-            if (Validate(Result) && Result.Result)
+            if (Validate(Result, false) && Result.Result)
                 await Shell.Current.Navigation.PopAsync();
         }
 
@@ -77,7 +77,7 @@ namespace SymptomTracker
             if (Validate(Result) && Result.Result)
             {
                 var CheckKey = await FirebaseBll.IsKeyOK();
-                if (Validate(CheckKey) && !CheckKey.Result)
+                if (Validate(CheckKey, false) && !CheckKey.Result)
                 {
                     await Shell.Current.Navigation.PushAsync(new SettingPage()
                     {

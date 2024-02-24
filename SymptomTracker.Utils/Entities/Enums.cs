@@ -13,7 +13,8 @@ namespace SymptomTracker.Utils.Entities
             new KeyValuePair<eEventType, string>(eEventType.NotSet, "Nichts"),
             new KeyValuePair<eEventType, string>(eEventType.Food, "Essen"),
             new KeyValuePair<eEventType, string>(eEventType.Symptom, "Symtom"),
-            new KeyValuePair<eEventType, string>(eEventType.Stress, "Stress")
+            new KeyValuePair<eEventType, string>(eEventType.Stress, "Stress"),
+            new KeyValuePair<eEventType, string>(eEventType.Mood, "Stimmung"),
         };
     }
 
@@ -23,5 +24,6 @@ namespace SymptomTracker.Utils.Entities
         Food = 1,
         Symptom = 2,
         Stress = 3,
+        Mood = 4,
     }
 }

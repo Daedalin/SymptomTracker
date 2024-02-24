@@ -7,6 +7,7 @@ using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.VisualBasic;
 using Daedalin.Core.Enum;
+using Org.BouncyCastle.Utilities;
 
 namespace SymptomTracker.BLL
 {
@@ -134,6 +135,11 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<bool>.Fail(ClientRault.Message, eMessageType.Error);
 
+                var Data = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid).OnceSingleAsync<object>();
+
+                if (Data == null)
+                    return OperatingResult<bool>.OK(true, "Noch keine Daten Vorhanden", eMessageType.Info);
+
                 var AllTypsOfTitles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
                                                             .Child("Titles")
                                                             .OnceSingleAsync<List<string>>();
@@ -143,7 +149,7 @@ namespace SymptomTracker.BLL
                 if (string.IsNullOrEmpty(Titles))
                     return OperatingResult<bool>.OK(true);
 
-                var result = await DecryptMessage<List<Strings>>(Titles);
+                var result = await Cryptography.DecryptAndDeserializeMessage<List<string>>(Titles);
 
                 return OperatingResult<bool>.OK(result.Success);
             }
@@ -168,7 +174,7 @@ namespace SymptomTracker.BLL
                                                    .Child($"{(int)eventType}")
                                                    .OnceSingleAsync<string>();
 
-                return await DecryptMessage<List<string>>(Titles);
+                return await Cryptography.DecryptAndDeserializeMessage<List<string>>(Titles);
             }
             catch (Exception ex)
             {
@@ -190,7 +196,7 @@ namespace SymptomTracker.BLL
 
                 list.Add(Title);
 
-                string Data = await EncryptMessage(list);
+                string Data = await Cryptography.SerializeAndEncryptMessage(list);
 
                 await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
                                       .Child("Titles")
@@ -220,7 +226,7 @@ namespace SymptomTracker.BLL
                                                    .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
                                                    .OnceSingleAsync<string>();
 
-                return await DecryptMessage<Day>(Data);
+                return await Cryptography.DecryptAndDeserializeMessage<Day>(Data);
             }
             catch (Exception ex)
             {
@@ -228,6 +234,38 @@ namespace SymptomTracker.BLL
             }
         }
         #endregion
+
+        public async Task<OperatingResult> UpdateDB()
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult.Fail(ClientRault.Message, eMessageType.Error);
+
+                var DBVersion = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                                      .Child("Settings")
+                                                      .Child("DB_Version")
+                                                      .OnceSingleAsync<int>();
+
+                if (DBVersion < DBUpdater.CurrentDBVersion)
+                {
+                    if (DBVersion < 2)
+                        await DBUpdater.From1VTo2V(m_firebaseClient, m_firebaseAuthClient.User.Uid);
+
+                    await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                          .Child("Settings")
+                                          .Child("DB_Version")
+                                          .PutAsync(DBUpdater.CurrentDBVersion);
+
+                }
+                return OperatingResult.OK($"Datenbankupdate wurde erfolgreich durchgeführt.", eMessageType.Info);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult.Fail(ex);
+            }
+        }
 
         #region UpdateDay
         public async Task<OperatingResult> UpdateDay(Day day)
@@ -238,7 +276,7 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
 
-                string Data = await EncryptMessage(day);
+                string Data = await Cryptography.SerializeAndEncryptMessage(day);
 
                 await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
                                       .Child("Dates")
@@ -256,49 +294,13 @@ namespace SymptomTracker.BLL
 
         #region Priart
 
-        #region Crypto
-        #region EncryptMessage
-        private static async Task<string> EncryptMessage(object data)
-        {
-            var Base64 = Cryptography.Base64Encode(JsonSerializer.Serialize(data));
-
-            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
-            if (EncryptPassword == null)
-            {
-                EncryptPassword = Guid.NewGuid().ToString().Replace("-", "");
-                await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
-            }
-
-            return Cryptography.Encrypt(Base64, EncryptPassword);
-        }
-        #endregion
-
-        #region DecryptMessage
-        private static async Task<OperatingResult<T>> DecryptMessage<T>(string Titles)
-        {
-            if (string.IsNullOrEmpty(Titles))
-                return OperatingResult<T>.OK(default(T));
-
-            var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
-            if (string.IsNullOrEmpty(EncryptPassword))
-                return OperatingResult<T>.Fail("Es wurde Kein Key eingegeben.", eMessageType.Warning, nameof(DecryptMessage));
-
-            var Base64 = Cryptography.Decrypt(Titles, EncryptPassword);
-
-            var List = JsonSerializer.Deserialize<T>(Cryptography.Base64Decode(Base64));
-
-            return OperatingResult<T>.OK(List);
-        }
-        #endregion
-        #endregion
-
         #region CreateFirebaseClient
         private async Task<OperatingResult> CreateFirebaseClient()
         {
             var LoginResult = await Login();
 
             if (!LoginResult.Result)
-                return OperatingResult.Fail("Nicht eingelogt.", Daedalin.Core.Enum.eMessageType.Info, "Firebase");
+                return OperatingResult.Fail("Nicht eingelogt.", eMessageType.Info, "Firebase");
 
             m_firebaseClient = new FirebaseClient(RealtimeDB_URL, new FirebaseOptions
             {

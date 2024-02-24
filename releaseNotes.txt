@@ -1,6 +1,7 @@
-Das ist der erste Release der über GitHub Actions erstellt wurde.
+Version 0.1.0
 
 Änderungen:
-Das UI in den Einstellungne wurde angepast
-Anmelde zwang funktioniert nun auch auf Android
-Key wird nun geprüft ob er gültig ist 
+Ihr könnt nun die Events bearbeiten.
+Es gibt nun ein neues Event in dem ihr eure Stimmung festhalten könnt.
+Desweiteren könnt ihr bei Stress und der Stimmung makieren, ob es arbeitsbezogen ist.
+Als letztes gibt es nun bei allen Events ein ganztägig-Flag mit dem ihr die Zeit ausschalten könnt.

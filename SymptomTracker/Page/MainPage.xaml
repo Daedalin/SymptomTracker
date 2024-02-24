@@ -25,6 +25,10 @@
                     Padding="10"
                     Command="{Binding CreateEventClick}"
                     CommandParameter="3"/>
+            <Button Text="Stimmung eintragen" 
+                    Padding="10"
+                    Command="{Binding CreateEventClick}"
+                    CommandParameter="4"/>
             <Button Text="Tag anzeigen" 
                     Padding="10"
                     Command="{Binding ShowDayClick}"/>

@@ -12,7 +12,8 @@
         <DatePicker Date="{Binding Date}"/>
 
 
-        <dg:DataGrid ItemsSource="{Binding Events}" 
+        <dg:DataGrid x:Name="DataGrid"
+                     ItemsSource="{Binding Events}"
                      SelectionEnabled="True"
                      RowHeight="70" HeaderHeight="50"                     
                      PageSize="5"
@@ -23,6 +24,16 @@
                 <dg:DataGridColumn Title="Beschreibung" PropertyName="Description" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Von" PropertyName="StartTime" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Bis" PropertyName="EndTime" SortingEnabled="True"/>
+                <dg:DataGridColumn Title="Bearbeiten" PropertyName="ID" SortingEnabled="False">
+                    <dg:DataGridColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Text="Edit" 
+                                    Margin="5"
+                                    Command="{Binding BindingContext.EditClick,  Source={RelativeSource AncestorType={x:Type dg:DataGrid}}}"
+                                    CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </dg:DataGridColumn.CellTemplate>
+                </dg:DataGridColumn>
             </dg:DataGrid.Columns>
             <dg:DataGrid.RowsBackgroundColorPalette>
                 <dg:PaletteCollection>

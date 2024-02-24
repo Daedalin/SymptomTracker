@@ -14,6 +14,7 @@ namespace SymptomTracker.ViewModel
         {
             ViewTitle = "Einstellungen";
             SaveClick = new RelayCommand(SetKey);
+            UpdateDBClick = new RelayCommand(OnUpdateDB);
             LogOutClick = new RelayCommand(OnLogOutClick);
             GetKey();
         }
@@ -25,11 +26,20 @@ namespace SymptomTracker.ViewModel
         }
         public RelayCommand SaveClick { get; set; }
         public RelayCommand LogOutClick { get; set; }
+        public RelayCommand UpdateDBClick { get; set; }
 
         private void OnLogOutClick()
         {
             Shell.Current.Navigation.PopAsync(false);
             FirebaseBll.Logout();
+        }
+
+        private async void OnUpdateDB()
+        {
+            UpdateDBClick.IsEnabled = false;
+            var result = await FirebaseBll.UpdateDB();
+            Validate(result);
+            UpdateDBClick.IsEnabled = true;
         }
 
         #region Get Key
