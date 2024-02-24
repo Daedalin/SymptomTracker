@@ -12,7 +12,7 @@ using Org.BouncyCastle.Utilities;
 namespace SymptomTracker.BLL
 {
     public delegate void SampleEventHandler();
-    public class FirebaseBll
+    public class RealtimeDatabaseBll
     {
         #region Needs
         private const string RealtimeDB_URL = "https://symptomtracker-0702-default-rtdb.europe-west1.firebasedatabase.app/";

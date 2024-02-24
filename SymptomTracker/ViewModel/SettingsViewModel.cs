@@ -31,13 +31,13 @@ namespace SymptomTracker.ViewModel
         private void OnLogOutClick()
         {
             Shell.Current.Navigation.PopAsync(false);
-            FirebaseBll.Logout();
+            RealtimeDatabaseBll.Logout();
         }
 
         private async void OnUpdateDB()
         {
             UpdateDBClick.IsEnabled = false;
-            var result = await FirebaseBll.UpdateDB();
+            var result = await RealtimeDatabaseBll.UpdateDB();
             Validate(result);
             UpdateDBClick.IsEnabled = true;
         }
