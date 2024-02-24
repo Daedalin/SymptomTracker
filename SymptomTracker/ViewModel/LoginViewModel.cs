@@ -61,7 +61,7 @@ namespace SymptomTracker
         #region Methods
         private async void HasLogin()
         {
-            var Result = await FirebaseBll.Login();
+            var Result = await RealtimeDatabaseBll.Login();
             if (Validate(Result, false) && Result.Result)
                 await Shell.Current.Navigation.PopAsync();
         }
@@ -71,12 +71,12 @@ namespace SymptomTracker
         {
             OperatingResult<bool> Result;
             if (IsSignUp)
-                Result = await FirebaseBll.CreateUser(Email, Password, DisplayName);
+                Result = await RealtimeDatabaseBll.CreateUser(Email, Password, DisplayName);
             else
-                Result = await FirebaseBll.Login(Email, Password);
+                Result = await RealtimeDatabaseBll.Login(Email, Password);
             if (Validate(Result) && Result.Result)
             {
-                var CheckKey = await FirebaseBll.IsKeyOK();
+                var CheckKey = await RealtimeDatabaseBll.IsKeyOK();
                 if (Validate(CheckKey, false) && !CheckKey.Result)
                 {
                     await Shell.Current.Navigation.PushAsync(new SettingPage()

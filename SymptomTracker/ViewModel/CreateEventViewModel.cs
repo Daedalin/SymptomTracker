@@ -128,7 +128,7 @@ namespace SymptomTracker.ViewModel
             SaveClick = new RelayCommand(OnSaveClick);
             PerformSearch = new RelayCommand(OnPerformSearch);
 
-            var TitleResult = await FirebaseBll.GetLastTitles(m_EventType);
+            var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
             OnPerformSearch();
@@ -144,7 +144,7 @@ namespace SymptomTracker.ViewModel
         }
         private async void OnSaveClick()
         {
-            var dayResult = await FirebaseBll.GetDay(Date);
+            var dayResult = await RealtimeDatabaseBll.GetDay(Date);
             Validate(dayResult);
 
             if (!dayResult.Success)
@@ -199,12 +199,12 @@ namespace SymptomTracker.ViewModel
             currentEvent.EndTime = !FullTime ? EndTime : null;
             currentEvent.StartTime = !FullTime ? StartTime : null;
 
-            var Result = await FirebaseBll.UpdateDay(day);
+            var Result = await RealtimeDatabaseBll.UpdateDay(day);
             if (Validate(Result))
             {
                 if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
                 {
-                    var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
+                    var AddTitlesResult = await RealtimeDatabaseBll.AddLastTitles(m_EventType, Title);
                     Validate(AddTitlesResult);
                 }
 

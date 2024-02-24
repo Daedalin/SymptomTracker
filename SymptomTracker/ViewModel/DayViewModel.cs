@@ -64,7 +64,7 @@ namespace SymptomTracker.ViewModel
         private async void __OnDateChange()
         {
             ViewTitle = Base_Title + Date.ToString("dd. MMM yyyy");
-            var GetDayReult = await FirebaseBll.GetDay(Date);
+            var GetDayReult = await RealtimeDatabaseBll.GetDay(Date);
             if (Validate(GetDayReult) && GetDayReult?.Result?.Events != null)
             {
                 Events = GetDayReult.Result.Events;
