@@ -241,17 +241,25 @@ namespace SymptomTracker.BLL
             {
                 var ClientRault = await CreateFirebaseClient();
                 if (!ClientRault.Success)
-                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+                    return OperatingResult.Fail(ClientRault.Message, eMessageType.Error);
 
                 var DBVersion = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
-                                                 .Child("Settings")
-                                                 .Child("DB_Version")
-                                                 .OnceSingleAsync<string>();
+                                                      .Child("Settings")
+                                                      .Child("DB_Version")
+                                                      .OnceSingleAsync<int>();
 
-               await  DBUpdater.From1VTo2V(m_firebaseClient, m_firebaseAuthClient.User.Uid);
+                if (DBVersion < DBUpdater.CurrentDBVersion)
+                {
+                    if (DBVersion < 2)
+                        await DBUpdater.From1VTo2V(m_firebaseClient, m_firebaseAuthClient.User.Uid);
 
+                    await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                                          .Child("Settings")
+                                          .Child("DB_Version")
+                                          .PutAsync(DBUpdater.CurrentDBVersion);
 
-                return OperatingResult.OK();
+                }
+                return OperatingResult.OK($"Datenbankupdate wurde erfolgreich durchgeführt.", eMessageType.Info);
             }
             catch (Exception ex)
             {

@@ -36,7 +36,10 @@ namespace SymptomTracker.ViewModel
 
         private async void OnUpdateDB()
         {
-            await FirebaseBll.UpdateDB();
+            UpdateDBClick.IsEnabled = false;
+            var result = await FirebaseBll.UpdateDB();
+            Validate(result);
+            UpdateDBClick.IsEnabled = true;
         }
 
         #region Get Key

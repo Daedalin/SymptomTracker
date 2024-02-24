@@ -1,4 +1,5 @@
-﻿using Daedalin.Core.OperationResult;
+﻿using Daedalin.Core.Enum;
+using Daedalin.Core.OperationResult;
 using Firebase.Database;
 using Firebase.Database.Query;
 using SymptomTracker.Utils.Entities;
@@ -14,6 +15,8 @@ namespace SymptomTracker.BLL
 {
     internal static class DBUpdater
     {
+        public const int CurrentDBVersion = 2;
+
         public async static Task<OperatingResult> From1VTo2V(FirebaseClient firebaseClient, string Uid)
         {
             try
