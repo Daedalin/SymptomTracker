@@ -1,7 +1,9 @@
 Version 0.1.0
 
-Änderungen:
-Ihr könnt nun die Events bearbeiten.
-Es gibt nun ein neues Event in dem ihr eure Stimmung festhalten könnt.
-Desweiteren könnt ihr bei Stress und der Stimmung makieren, ob es arbeitsbezogen ist.
-Als letztes gibt es nun bei allen Events ein ganztägig-Flag mit dem ihr die Zeit ausschalten könnt.
+â—Bitte dengt dran euern Key vor dem update zu sichern.â—
+
+Ã„nderungen:
+Ihr kÃ¶nnt nun die Events bearbeiten.
+Es gibt nun ein neues Event in dem ihr eure Stimmung festhalten kÃ¶nnt.
+Desweiteren kÃ¶nnt ihr bei Stress und der Stimmung makieren, ob es arbeitsbezogen ist.
+Als letztes gibt es nun bei allen Events ein ganztÃ¤gig-Flag mit dem ihr die Zeit ausschalten kÃ¶nnt.
