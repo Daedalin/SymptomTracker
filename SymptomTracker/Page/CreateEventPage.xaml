@@ -7,7 +7,7 @@
     <ContentPage.Resources>
         <conv:InverseBooleanConverter x:Key="InverseBoolean"/>
     </ContentPage.Resources>
-    <Grid>
+    <ScrollView>
         <VerticalStackLayout MaximumWidthRequest="700" Margin="20,0,20,20">
             <!--Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
@@ -86,7 +86,7 @@
                 </VerticalStackLayout>
             </VerticalStackLayout>
 
-            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsStress}">
+            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
                 <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
@@ -96,5 +96,5 @@
                     Command="{Binding SaveClick}"/>
 
         </VerticalStackLayout >
-    </Grid>
+    </ScrollView>
 </ContentPage>

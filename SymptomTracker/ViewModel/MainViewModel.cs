@@ -20,8 +20,6 @@ namespace SymptomTracker.ViewModel
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
         }
 
-
-
         #region Command
         public RelayCommandPara CreateEventClick { get; set; }
         public RelayCommand ShowDayClick { get; set; }

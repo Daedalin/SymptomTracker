@@ -1,6 +1,6 @@
 namespace SymptomTracker.Page;
 
-public partial class DayPage : ContentPage
+public partial class DayPage : ContentPageBase
 {
 	public DayPage()
 	{

@@ -21,7 +21,7 @@ namespace SymptomTracker.ViewModel
         public DateTime Date
         {
             get => GetProperty<DateTime>();
-            set => SetProperty(value, __OnDateChange);
+            set => SetProperty(value);
         }
         public List<Event> Events
         {
@@ -41,6 +41,12 @@ namespace SymptomTracker.ViewModel
 
         public ICommand EditClick { get; set; }
 
+
+        public override void OnAppearing()
+        {
+            __OnDateChange();
+            base.OnAppearing();
+        }
 
         private async void __OnEditClick(int Event)
         {
