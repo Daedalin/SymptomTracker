@@ -25,7 +25,7 @@ namespace SymptomTracker.ViewModel
             Description = existingEvent.Description;
             EndTime = existingEvent.EndTime ?? TimeSpan.Zero;
             StartTime = existingEvent.StartTime ?? TimeSpan.Zero;
-            if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
+            if (IsWorkRelated)
                 WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
 
             __Ini();
@@ -75,7 +75,7 @@ namespace SymptomTracker.ViewModel
             {
                 m_EventType = value.Key;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsStress));
+                OnPropertyChanged(nameof(IsWorkRelated));
             }
         }
         public string Title
@@ -115,7 +115,7 @@ namespace SymptomTracker.ViewModel
             set => SetProperty(value);
         }
 
-        public bool IsStress => m_EventType == eEventType.Stress;
+        public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
 
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
@@ -160,34 +160,44 @@ namespace SymptomTracker.ViewModel
             else
                 day = dayResult.Result;
 
-            Event newEvent;
+            Event currentEvent;
             if (m_Id != -1)
-                newEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
+            {
+                currentEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
+                if(IsWorkRelated && currentEvent is not WorkRelatedEvent)
+                {
+                    day.Events.Remove(currentEvent);
+                    currentEvent = new WorkRelatedEvent()
+                    {
+                        ID = m_Id                       
+                    };
+                    day.Events.Add(currentEvent);
+                }
+                if (IsWorkRelated)
+                    (currentEvent as WorkRelatedEvent).WorkRelated = WorkRelated;
+            }
             else
             {
-                if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
+                if (IsWorkRelated)
                 {
-                    newEvent = new WorkRelatedEvent()
+                    currentEvent = new WorkRelatedEvent()
                     {
                         WorkRelated = WorkRelated
                     };
                 }
                 else
-                    newEvent = new Event();
+                    currentEvent = new Event();
 
-                day.Events.Add(newEvent);
-                newEvent.ID = day.Events.Count() + 1;
+                day.Events.Add(currentEvent);
+                currentEvent.ID = day.Events.Count() + 1;
             }
 
-            newEvent.Name = Title;
-            newEvent.FullTime = FullTime;
-            newEvent.EventType = m_EventType;
-            newEvent.Description = Description;
-            newEvent.EndTime = !FullTime ? EndTime : null;
-            newEvent.StartTime = !FullTime ? StartTime : null;
-
-
-
+            currentEvent.Name = Title;
+            currentEvent.FullTime = FullTime;
+            currentEvent.EventType = m_EventType;
+            currentEvent.Description = Description;
+            currentEvent.EndTime = !FullTime ? EndTime : null;
+            currentEvent.StartTime = !FullTime ? StartTime : null;
 
             var Result = await FirebaseBll.UpdateDay(day);
             if (Validate(Result))
@@ -200,8 +210,6 @@ namespace SymptomTracker.ViewModel
 
                 await Shell.Current.Navigation.PopAsync();
             }
-
-
         }
     }
 }

@@ -39,6 +39,8 @@ namespace SymptomTracker
             }
         }
 
+        public virtual void OnAppearing() { }
+
         #region Validate
         public bool Validate<T>(OperatingResult<T> operatingResult) => Validate<T>(operatingResult, true);
 

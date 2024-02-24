@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:dg="clr-namespace:Maui.DataGrid;assembly=Maui.DataGrid"
-             x:Class="SymptomTracker.Page.DayPage"
-             Title="{Binding ViewTitle}">
+<Pages:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:dg="clr-namespace:Maui.DataGrid;assembly=Maui.DataGrid"
+                       xmlns:Pages="clr-namespace:SymptomTracker.Page"
+                       x:Class="SymptomTracker.Page.DayPage"
+                       Title="{Binding ViewTitle}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -43,4 +44,4 @@
             </dg:DataGrid.RowsBackgroundColorPalette>
         </dg:DataGrid>
     </Grid>
-</ContentPage>
+</Pages:ContentPageBase>
