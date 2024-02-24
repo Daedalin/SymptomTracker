@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.daedalin.SymptomTracker" android:versionCode="2" android:installLocation="internalOnly">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.daedalin.SymptomTracker" android:versionCode="000100" android:versionName="00.01.00">
 	<application android:allowBackup="false" android:fullBackupContent="@xml/auto_backup_rules" android:icon="@mipmap/appicon" android:label="Symptom-Tracker" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
