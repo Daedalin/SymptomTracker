@@ -138,6 +138,7 @@ namespace SymptomTracker.BLL
         }
         #endregion
 
+        #region UpdateDB
         public async Task<OperatingResult> UpdateDB()
         {
             try
@@ -169,6 +170,7 @@ namespace SymptomTracker.BLL
                 return OperatingResult.Fail(ex);
             }
         }
+        #endregion
 
         #region UpdateDay
         public async Task<OperatingResult> UpdateDay(Day day)

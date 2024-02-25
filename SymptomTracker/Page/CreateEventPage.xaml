@@ -100,6 +100,19 @@
                 <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
+            <HorizontalStackLayout Margin="0,20,0,0">
+                <Button Text="Auswählen"
+                        Margin="0,0,5,0"
+                        Command="{Binding PickImageClick}"/>
+                <Button Text="Foto"
+                        Margin="5,0,0,0"
+                        Command="{Binding TakePhotoClick}"/>
+            </HorizontalStackLayout>
+
+            <Image Source="{Binding ImagePath}" 
+                   MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                   WidthRequest="{Binding Width, Source={x:Reference List}}"/>
+
             <Button Text="Speicher"
                     Margin="0,20,0,0"
                     Command="{Binding SaveClick}"/>

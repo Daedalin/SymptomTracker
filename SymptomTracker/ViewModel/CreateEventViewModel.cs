@@ -115,25 +115,44 @@ namespace SymptomTracker.ViewModel
             set => SetProperty(value);
         }
 
+        public string ImagePath
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+
+        public ImageSource Image
+        {
+            get => GetProperty<ImageSource>();
+            set => SetProperty(value);
+        }
+
         public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
 
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
+        public RelayCommand TakePhotoClick { get; set; }
+        public RelayCommand PickImageClick { get; set; }
 
+        #region __Ini
         private async void __Ini()
         {
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
 
             SaveClick = new RelayCommand(OnSaveClick);
+            TakePhotoClick = new RelayCommand(TakePhoto);
             PerformSearch = new RelayCommand(OnPerformSearch);
+            PickImageClick = new RelayCommand(PickImage);
 
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
             OnPerformSearch();
         }
+        #endregion
 
+        #region OnPerformSearch
         private void OnPerformSearch()
         {
             if (m_Titles != null)
@@ -142,6 +161,9 @@ namespace SymptomTracker.ViewModel
                 OnPropertyChanged(nameof(TitleSearchResults));
             }
         }
+        #endregion
+
+        #region OnSaveClick
         private async void OnSaveClick()
         {
             var dayResult = await RealtimeDatabaseBll.GetDay(Date);
@@ -164,12 +186,12 @@ namespace SymptomTracker.ViewModel
             if (m_Id != -1)
             {
                 currentEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
-                if(IsWorkRelated && currentEvent is not WorkRelatedEvent)
+                if (IsWorkRelated && currentEvent is not WorkRelatedEvent)
                 {
                     day.Events.Remove(currentEvent);
                     currentEvent = new WorkRelatedEvent()
                     {
-                        ID = m_Id                       
+                        ID = m_Id
                     };
                     day.Events.Add(currentEvent);
                 }
@@ -211,5 +233,57 @@ namespace SymptomTracker.ViewModel
                 await Shell.Current.Navigation.PopAsync();
             }
         }
+        #endregion
+
+        #region TakePhoto
+        public async void TakePhoto()
+        {
+            if (MediaPicker.Default.IsCaptureSupported)
+            {
+                FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
+
+                if (photo != null)
+                {
+                    // save the file into local storage
+                    string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                    using Stream sourceStream = await photo.OpenReadAsync();
+                    using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                    await sourceStream.CopyToAsync(localFileStream);
+                    ImagePath = localFilePath;
+                    Image = ImageSource.FromStream(() => sourceStream);
+                }
+            }
+        }
+        #endregion
+
+        #region PickImage
+        public async void PickImage()
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    FileTypes = FilePickerFileType.Images,
+                    PickerTitle = "Image auswählen"
+                });
+                if (result != null)
+                {
+                    if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
+                        result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
+                    {
+                        using var stream = await result.OpenReadAsync();
+                        Image = ImageSource.FromStream(() => stream);
+                        ImagePath = result.FullPath;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Fehler", ex.Message, "ok");
+            }
+        }
+        #endregion
     }
 }
