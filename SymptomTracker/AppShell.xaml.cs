@@ -9,7 +9,7 @@
 
         protected override void OnNavigating(ShellNavigatingEventArgs args)
         {
-            var hasLogin = ViewModelBase.RealtimeDatabaseBll.HasLogin;
+            var hasLogin = ViewModelBase.LoginBll.HasLogin;
             if (!hasLogin && (args.Source == ShellNavigationSource.Pop || args.Source == ShellNavigationSource.PopToRoot))
             {
                 if (args.Current.Location.OriginalString.Contains("LoginPage"))

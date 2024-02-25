@@ -11,120 +11,23 @@ using Org.BouncyCastle.Utilities;
 
 namespace SymptomTracker.BLL
 {
-    public delegate void SampleEventHandler();
     public class RealtimeDatabaseBll
     {
         #region Needs
         private const string RealtimeDB_URL = "https://symptomtracker-0702-default-rtdb.europe-west1.firebasedatabase.app/";
-        private FirebaseAuthClient m_firebaseAuthClient;
         private FirebaseClient m_firebaseClient;
+        private LoginBll m_LoginBll;
         #endregion
 
-        public event SampleEventHandler PlsLogin;
-
-        public bool HasLogin { get => m_firebaseAuthClient?.User != null; }
-
-        #region All About Login
-        #region CreateUser
-        public async Task<OperatingResult<bool>> CreateUser(string EMail, string Password, string UserName)
+        public LoginBll LoginBll
         {
-            try
+            get
             {
-                if (m_firebaseAuthClient == null)
-                    m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
-                else if (m_firebaseAuthClient.User != null)
-                    m_firebaseAuthClient.SignOut();
-
-                await m_firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(EMail, Password, UserName);
-                return OperatingResult<bool>.OK(true);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<bool>.Fail(ex, nameof(CreateUser));
+                if(m_LoginBll == null)
+                    m_LoginBll = new LoginBll();
+                return m_LoginBll;
             }
         }
-        #endregion
-
-        #region Login
-        public async Task<OperatingResult<bool>> Login()
-        {
-            try
-            {
-                if (m_firebaseAuthClient?.User != null)
-                {
-                    await Task.Delay(5);
-                    return OperatingResult<bool>.OK(true);
-                }
-
-                var EMail = await SecureStorage.Default.GetAsync("EMail");
-                var Password = await SecureStorage.Default.GetAsync("Password");
-
-                if (EMail != null && Password != null)
-                    return await Login(EMail, Password);
-                else
-                    return OperatingResult<bool>.OK(false);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<bool>.Fail(ex, nameof(Login));
-            }
-        }
-        public async Task<OperatingResult<bool>> Login(string EMail, string Password)
-        {
-            try
-            {
-                m_firebaseAuthClient = FirebaseClientFactory.CreateLoginClient();
-                await m_firebaseAuthClient.SignInWithEmailAndPasswordAsync(EMail, Password);
-
-                await SecureStorage.Default.SetAsync("EMail", EMail);
-                await SecureStorage.Default.SetAsync("Password", Password);
-
-                return OperatingResult<bool>.OK(true);
-            }
-            catch (FirebaseAuthException)
-            {
-                return new OperatingResult<bool>()
-                {
-                    Success = true,
-                    Result = false,
-                    Message = "Benutzername und Passwort simmen nicht über ein.",
-                    MessageType = eMessageType.Warning,
-                    Division = "Login"
-                };
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<bool>.Fail(ex, nameof(Login));
-            }
-        }
-        #endregion
-
-        #region Logout
-        public OperatingResult<bool> Logout()
-        {
-            try
-            {
-                if (m_firebaseAuthClient?.User == null)
-                {
-                    PlsLogin?.Invoke();
-                    return OperatingResult<bool>.OK(true);
-                }
-
-                SecureStorage.Default.Remove("EMail");
-                SecureStorage.Default.Remove("Password");
-
-                m_firebaseAuthClient.SignOut();
-                PlsLogin?.Invoke();
-                return OperatingResult<bool>.OK(true);
-            }
-            catch (Exception ex)
-            {
-                PlsLogin?.Invoke();
-                return OperatingResult<bool>.Fail(ex, nameof(Login));
-            }
-        }
-        #endregion
-        #endregion
 
         #region IsKeyOK
         public async Task<OperatingResult<bool>> IsKeyOK()
@@ -135,12 +38,12 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<bool>.Fail(ClientRault.Message, eMessageType.Error);
 
-                var Data = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid).OnceSingleAsync<object>();
+                var Data = await m_firebaseClient.Child(LoginBll.GetUid()).OnceSingleAsync<object>();
 
                 if (Data == null)
                     return OperatingResult<bool>.OK(true, "Noch keine Daten Vorhanden", eMessageType.Info);
 
-                var AllTypsOfTitles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                var AllTypsOfTitles = await m_firebaseClient.Child(LoginBll.GetUid())
                                                             .Child("Titles")
                                                             .OnceSingleAsync<List<string>>();
 
@@ -169,7 +72,7 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<List<string>>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
 
-                var Titles = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                var Titles = await m_firebaseClient.Child(LoginBll.GetUid())
                                                    .Child("Titles")
                                                    .Child($"{(int)eventType}")
                                                    .OnceSingleAsync<string>();
@@ -198,7 +101,7 @@ namespace SymptomTracker.BLL
 
                 string Data = await Cryptography.SerializeAndEncryptMessage(list);
 
-                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                await m_firebaseClient.Child(LoginBll.GetUid())
                                       .Child("Titles")
                                       .Child($"{(int)eventType}")
                                       .PutAsync<string>(Data);
@@ -221,7 +124,7 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<Day>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
 
-                var Data = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                var Data = await m_firebaseClient.Child(LoginBll.GetUid())
                                                    .Child("Dates")
                                                    .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
                                                    .OnceSingleAsync<string>();
@@ -243,7 +146,7 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult.Fail(ClientRault.Message, eMessageType.Error);
 
-                var DBVersion = await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                var DBVersion = await m_firebaseClient.Child(LoginBll.GetUid())
                                                       .Child("Settings")
                                                       .Child("DB_Version")
                                                       .OnceSingleAsync<int>();
@@ -251,9 +154,9 @@ namespace SymptomTracker.BLL
                 if (DBVersion < DBUpdater.CurrentDBVersion)
                 {
                     if (DBVersion < 2)
-                        await DBUpdater.From1VTo2V(m_firebaseClient, m_firebaseAuthClient.User.Uid);
+                        await DBUpdater.From1VTo2V(m_firebaseClient, LoginBll.GetUid());
 
-                    await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                    await m_firebaseClient.Child(LoginBll.GetUid())
                                           .Child("Settings")
                                           .Child("DB_Version")
                                           .PutAsync(DBUpdater.CurrentDBVersion);
@@ -278,7 +181,7 @@ namespace SymptomTracker.BLL
 
                 string Data = await Cryptography.SerializeAndEncryptMessage(day);
 
-                await m_firebaseClient.Child(m_firebaseAuthClient.User.Uid)
+                await m_firebaseClient.Child(LoginBll.GetUid())
                                       .Child("Dates")
                                       .Child($"{day.Date.Year}-{day.Date.Month}-{day.Date.Day}")
                                       .PutAsync<string>(Data);
@@ -297,7 +200,7 @@ namespace SymptomTracker.BLL
         #region CreateFirebaseClient
         private async Task<OperatingResult> CreateFirebaseClient()
         {
-            var LoginResult = await Login();
+            var LoginResult = await LoginBll.Login();
 
             if (!LoginResult.Result)
                 return OperatingResult.Fail("Nicht eingelogt.", eMessageType.Info, "Firebase");
@@ -307,7 +210,7 @@ namespace SymptomTracker.BLL
                 AuthTokenAsyncFactory = async () =>
                 {
                     await Task.Delay(50);
-                    return m_firebaseAuthClient.User.Credential.RefreshToken;
+                    return LoginBll.GetToken();
                 }
             });
 

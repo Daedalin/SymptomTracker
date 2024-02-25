@@ -13,8 +13,9 @@ namespace SymptomTracker
 {
     internal class ViewModelBase : DaedalinBaseViewModel
     {
-        private static RealtimeDatabaseBll m_RealtimeDatabaseBll;
         public string m_ViewModel;
+        private static LoginBll m_LoginBll;
+        private static RealtimeDatabaseBll m_RealtimeDatabaseBll;
 
         public ViewModelBase() : base()
         {
@@ -22,12 +23,21 @@ namespace SymptomTracker
 
             if (m_ViewModel == nameof(MainViewModel))
             {
-                RealtimeDatabaseBll.PlsLogin += PlsLogin;
+                LoginBll.PlsLogin += PlsLogin;
             }
 
             HasLogin();
         }
 
+        public static LoginBll LoginBll
+        {
+            get
+            {
+                if (m_LoginBll == null)
+                    m_LoginBll = new LoginBll();
+                return m_LoginBll;
+            }
+        }
 
         public static RealtimeDatabaseBll RealtimeDatabaseBll
         {
@@ -79,7 +89,7 @@ namespace SymptomTracker
 
         private async void HasLogin()
         {
-            var Result = await RealtimeDatabaseBll.Login();
+            var Result = await LoginBll.Login();
             Validate(Result, false);
             if (!Result.Result && m_ViewModel != nameof(LoginViewModel))
                 PlsLogin();
