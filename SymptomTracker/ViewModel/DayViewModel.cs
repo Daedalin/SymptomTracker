@@ -21,7 +21,7 @@ namespace SymptomTracker.ViewModel
         public DateTime Date
         {
             get => GetProperty<DateTime>();
-            set => SetProperty(value);
+            set => SetProperty(value, __OnDateChange);
         }
         public List<Event> Events
         {

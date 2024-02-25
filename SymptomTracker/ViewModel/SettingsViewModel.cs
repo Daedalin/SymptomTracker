@@ -31,7 +31,7 @@ namespace SymptomTracker.ViewModel
         private void OnLogOutClick()
         {
             Shell.Current.Navigation.PopAsync(false);
-            RealtimeDatabaseBll.Logout();
+            LoginBll.Logout();
         }
 
         private async void OnUpdateDB()
