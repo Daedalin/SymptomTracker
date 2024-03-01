@@ -1,7 +1,9 @@
-Version 0.1.0
-
 ❗Bitte dengt dran euern Key vor dem update zu sichern.❗
 
+Version 1.0.0.0
+Hinzufügen eines App Icons 
+
+Version 0.1.0
 Änderungen:
 Ihr könnt nun die Events bearbeiten.
 Es gibt nun ein neues Event in dem ihr eure Stimmung festhalten könnt.
