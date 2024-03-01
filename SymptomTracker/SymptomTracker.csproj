@@ -35,56 +35,56 @@
 	  <ApplicationId>de.daedalin.Debug.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker.Debug</ApplicationTitle>
 	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 	  <ApplicationId>de.daedalin.Debug.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker.Debug</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>de.daedalin.Debug.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker.Debug</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>de.daedalin.Debug.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker.Debug</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-android|AnyCPU'">
 	  <ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
 	  <ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>de.daedalin.SymptomTracker</ApplicationId>
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
-	  <ApplicationDisplayVersion>1.0.0.0</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 	  <ApplicationVersion>010000</ApplicationVersion>
 	</PropertyGroup>
 
