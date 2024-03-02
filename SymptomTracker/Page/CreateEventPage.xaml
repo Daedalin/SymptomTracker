@@ -90,6 +90,7 @@
                 <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
+                         HeightRequest="100"
                          Placeholder="Beschribung"
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>
