@@ -1,0 +1,39 @@
+on: 
+    push:
+        paths:
+        - '**DebugAndroidManifest.xml'    
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3  
+      
+      - name: Synk
+        run: |
+            cp SymptomTracker/Platforms/Android/DebugAndroidManifest.xml SymptomTracker/Platforms/Android/ReleaseAndroidManifest.xml 
+     
+      - name: Remove .Debug.
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: ".Debug."
+          replace: "."
+          include: "**ReleaseAndroidManifest.xml"
+          regex: false
+
+      - name: Remove _Debug
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "_debug\""
+          replace: "\""
+          include: "**ReleaseAndroidManifest.xml"
+          regex: false
+
+      - name: Commit report
+        run: |
+          git config --global user.name 'AutoCheckin'
+          git config --global user.email 'AutoCheckin@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git checkout "${GITHUB_REF:11}"
+          git commit -am "Synk AndroidManifest"
+          git push
