@@ -1,7 +1,11 @@
+name: Synk AndroidManifest
+
 on: 
     push:
         paths:
-        - '**DebugAndroidManifest.xml'    
+        - '**DebugAndroidManifest.xml'   
+        branches:
+        - dev 
 
 jobs:
   build:
