@@ -90,7 +90,8 @@
                 <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
-                         HeightRequest="100"
+                         MaximumHeightRequest="315"
+                         AutoSize="TextChanges"
                          Placeholder="Beschribung"
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>

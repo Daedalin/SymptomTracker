@@ -37,7 +37,7 @@ namespace SymptomTracker.ViewModel
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
-            Description = String.Empty;
+            Description = " ";
             EndTime = DateTime.Now.TimeOfDay;
             StartTime = DateTime.Now.TimeOfDay;
 
@@ -148,6 +148,7 @@ namespace SymptomTracker.ViewModel
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
+            Description = String.Empty;
             OnPerformSearch();
         }
         #endregion
