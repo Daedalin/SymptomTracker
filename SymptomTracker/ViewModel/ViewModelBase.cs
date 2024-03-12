@@ -15,6 +15,7 @@ namespace SymptomTracker
     {
         public string m_ViewModel;
         private static LoginBll m_LoginBll;
+        private static StorageBll m_StorageBll;
         private static RealtimeDatabaseBll m_RealtimeDatabaseBll;
 
         public ViewModelBase() : base()
@@ -46,6 +47,16 @@ namespace SymptomTracker
                 if (m_RealtimeDatabaseBll == null)
                     m_RealtimeDatabaseBll = new RealtimeDatabaseBll();
                 return m_RealtimeDatabaseBll;
+            }
+        }
+
+        public static StorageBll StorageBll
+        {
+            get
+            {
+                if (m_StorageBll == null)
+                    m_StorageBll = new StorageBll();
+                return m_StorageBll;
             }
         }
 

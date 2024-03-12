@@ -15,6 +15,7 @@ namespace SymptomTracker.ViewModel
         private eEventType m_EventType;
         private List<string> m_Titles;
 
+        #region Constructor
         public CreateEventViewModel(DateTime date, Event existingEvent)
         {
             Date = date;
@@ -43,8 +44,9 @@ namespace SymptomTracker.ViewModel
 
             __Ini();
         }
+        #endregion
 
-
+        #region Propertys
         public DateTime Date
         {
             get => GetProperty<DateTime>();
@@ -129,11 +131,15 @@ namespace SymptomTracker.ViewModel
 
         public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
 
+        #region Command
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
         public RelayCommand TakePhotoClick { get; set; }
         public RelayCommand PickImageClick { get; set; }
+        #endregion
+        #endregion
 
+        #region private methods
         #region __Ini
         private async void __Ini()
         {
@@ -183,6 +189,36 @@ namespace SymptomTracker.ViewModel
             else
                 day = dayResult.Result;
 
+            Event currentEvent = __CreateOrGetEvent(day);
+
+            currentEvent.Name = Title;
+            currentEvent.FullTime = FullTime;
+            currentEvent.EventType = m_EventType;
+            currentEvent.Description = Description;
+            currentEvent.EndTime = !FullTime ? EndTime : null;
+            currentEvent.StartTime = !FullTime ? StartTime : null;
+
+            var uploadeResult = await StorageBll.UploadeImage(ImagePath, Date, currentEvent.ID);  
+            if(!Validate(uploadeResult))
+                return;
+
+            var Result = await RealtimeDatabaseBll.UpdateDay(day);
+            if (Validate(Result))
+            {
+                if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
+                {
+                    var AddTitlesResult = await RealtimeDatabaseBll.AddLastTitles(m_EventType, Title);
+                    Validate(AddTitlesResult);
+                }
+
+                await Shell.Current.Navigation.PopAsync();
+            }
+        }
+        #endregion
+
+        #region __CreateOrGetEvent
+        private Event __CreateOrGetEvent(Day day)
+        {
             Event currentEvent;
             if (m_Id != -1)
             {
@@ -215,46 +251,36 @@ namespace SymptomTracker.ViewModel
                 currentEvent.ID = day.Events.Count() + 1;
             }
 
-            currentEvent.Name = Title;
-            currentEvent.FullTime = FullTime;
-            currentEvent.EventType = m_EventType;
-            currentEvent.Description = Description;
-            currentEvent.EndTime = !FullTime ? EndTime : null;
-            currentEvent.StartTime = !FullTime ? StartTime : null;
-
-            var Result = await RealtimeDatabaseBll.UpdateDay(day);
-            if (Validate(Result))
-            {
-                if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
-                {
-                    var AddTitlesResult = await RealtimeDatabaseBll.AddLastTitles(m_EventType, Title);
-                    Validate(AddTitlesResult);
-                }
-
-                await Shell.Current.Navigation.PopAsync();
-            }
+            return currentEvent;
         }
         #endregion
 
         #region TakePhoto
         public async void TakePhoto()
         {
-            if (MediaPicker.Default.IsCaptureSupported)
+            try
             {
-                FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
-
-                if (photo != null)
+                if (MediaPicker.Default.IsCaptureSupported)
                 {
-                    // save the file into local storage
-                    string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                    FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
 
-                    using Stream sourceStream = await photo.OpenReadAsync();
-                    using FileStream localFileStream = File.OpenWrite(localFilePath);
+                    if (photo != null)
+                    {
+                        // save the file into local storage
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
-                    await sourceStream.CopyToAsync(localFileStream);
-                    ImagePath = localFilePath;
-                    Image = ImageSource.FromStream(() => sourceStream);
+                        using Stream sourceStream = await photo.OpenReadAsync();
+                        using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                        await sourceStream.CopyToAsync(localFileStream);
+                        ImagePath = localFilePath;
+                        Image = ImageSource.FromStream(() => sourceStream);
+                    }
                 }
+            }
+            catch (PermissionException pe)
+            {
+               await Shell.Current.DisplayAlert("Warning", pe.Message, "Ok");
             }
         }
         #endregion
@@ -285,6 +311,7 @@ namespace SymptomTracker.ViewModel
                 await Shell.Current.DisplayAlert("Fehler", ex.Message, "ok");
             }
         }
+        #endregion
         #endregion
     }
 }
