@@ -20,10 +20,8 @@ namespace SymptomTracker.BLL
         #endregion
 
         #region Encrypt
-        public static async Task<string> Encrypt(string data)
+        public static async Task<string> Encrypt(string data, bool IsFile = false)
         {
-            var Base64 = Cryptography.Base64Encode(data);
-
             var EncryptPassword = await SecureStorage.Default.GetAsync("EncryptPassword");
             if (EncryptPassword == null)
             {
@@ -31,7 +29,15 @@ namespace SymptomTracker.BLL
                 await SecureStorage.Default.SetAsync("EncryptPassword", EncryptPassword);
             }
 
-            return Cryptography.Encrypt(Base64, EncryptPassword);
+            if (IsFile)
+            {
+                return EncryptFile(data, EncryptPassword);
+            }
+            else
+            {
+                var Base64 = Cryptography.Base64Encode(data);
+                return EncryptString(Base64, EncryptPassword);
+            }
         }
         #endregion
 
@@ -60,7 +66,7 @@ namespace SymptomTracker.BLL
         #endregion
 
         #region Decrypt
-        public static async Task<OperatingResult<string>> Decrypt(string Data)
+        public static async Task<OperatingResult<string>> Decrypt(string Data, bool IsFile = false)
         {
             if (string.IsNullOrEmpty(Data))
                 return OperatingResult<string>.OK(null);
@@ -69,25 +75,93 @@ namespace SymptomTracker.BLL
             if (string.IsNullOrEmpty(EncryptPassword))
                 return OperatingResult<string>.Fail("Es wurde Kein Key eingegeben.", eMessageType.Warning, nameof(DecryptAndDeserializeMessage));
 
-            var Base64 = Cryptography.Decrypt(Data, EncryptPassword);
-            var DataSting = Cryptography.Base64Decode(Base64);
+            if (IsFile)
+            {
+                var outputFilePath = DecryptFile(Data, EncryptPassword);
+                return OperatingResult<string>.OK(outputFilePath);
+            }
+            else
+            {
+                var Base64 = DecryptString(Data, EncryptPassword);
+                var DataSting = Base64Decode(Base64);
 
-            return OperatingResult<string>.OK(DataSting);
+                return OperatingResult<string>.OK(DataSting);
+            }
         }
         #endregion
 
+        #region Base64
         private static string Base64Encode(string str)
         {
-            byte[] encbuff = System.Text.Encoding.UTF8.GetBytes(str);
+            byte[] encbuff = Encoding.UTF8.GetBytes(str);
             return Convert.ToBase64String(encbuff);
         }
         private static string Base64Decode(string str)
         {
             byte[] decbuff = Convert.FromBase64String(str);
-            return System.Text.Encoding.UTF8.GetString(decbuff);
+            return Encoding.UTF8.GetString(decbuff);
         }
+        #endregion
 
-        private static string Encrypt(string plainText, string encryptionKey)
+        #region EncryptFile
+        private static string EncryptFile(string inputFilePath, string encryptionKey)
+        {
+            byte[] iv = new byte[16];
+            var outputFilePath = $"{inputFilePath}.encryption";
+            var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
+
+            using (FileStream fsInput = new FileStream(inputFilePath, FileMode.Open))
+            {
+                using (FileStream fsOutput = new FileStream(outputFilePath, FileMode.Create))
+                {
+                    using (Aes aes = Aes.Create())
+                    {
+                        aes.Key = encryptionKeyBytes;
+                        aes.IV = iv;
+
+                        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+                        using (CryptoStream cs = new CryptoStream(fsOutput, encryptor, CryptoStreamMode.Write))
+                        {
+                            fsInput.CopyTo(cs);
+                        }
+                    }
+                }
+            }
+            return outputFilePath;
+        }
+        #endregion
+
+        #region DecryptFile
+        private static string DecryptFile(string inputFilePath, string encryptionKey)
+        {
+            byte[] iv = new byte[16];
+            var outputFilePath = inputFilePath.Replace(".encryption", "");
+            var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
+
+            using (FileStream fsInput = new FileStream(inputFilePath, FileMode.Open))
+            {
+                using (FileStream fsOutput = new FileStream(outputFilePath, FileMode.Create))
+                {
+                    using (Aes aes = Aes.Create())
+                    {
+                        aes.Key = encryptionKeyBytes;
+                        aes.IV = iv;
+
+                        // Perform decryption
+                        ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                        using (CryptoStream cs = new CryptoStream(fsOutput, decryptor, CryptoStreamMode.Write))
+                        {
+                            fsInput.CopyTo(cs);
+                        }
+                    }
+                }
+            }
+            return outputFilePath;
+        }
+        #endregion
+
+        #region EncryptString
+        private static string EncryptString(string plainText, string encryptionKey)
         {
             var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
@@ -117,8 +191,10 @@ namespace SymptomTracker.BLL
 
             return Convert.ToBase64String(array);
         }
+        #endregion
 
-        private static string Decrypt(string cipherText, string encryptionKey)
+        #region DecryptString
+        private static string DecryptString(string cipherText, string encryptionKey)
         {
             var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
@@ -143,14 +219,6 @@ namespace SymptomTracker.BLL
                 }
             }
         }
-
-        private static readonly byte[] Salt = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-        public static byte[] CreateKey(string password, int keyBytes = 32)
-        {
-            const int Iterations = 300;
-            var keyGenerator = new Rfc2898DeriveBytes(password, Salt, Iterations);
-            return keyGenerator.GetBytes(keyBytes);
-        }
+        #endregion
     }
-
 }

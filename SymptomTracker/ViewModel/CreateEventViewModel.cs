@@ -29,9 +29,11 @@ namespace SymptomTracker.ViewModel
             if (IsWorkRelated)
                 WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
 
+            __DownloadImage();
+
             __Ini();
         }
-
+                
         public CreateEventViewModel(eEventType eventType)
         {
             m_Id = -1;
@@ -123,6 +125,7 @@ namespace SymptomTracker.ViewModel
             set => SetProperty(value);
         }
 
+        [Obsolete] //?
         public ImageSource Image
         {
             get => GetProperty<ImageSource>();
@@ -198,7 +201,7 @@ namespace SymptomTracker.ViewModel
             currentEvent.EndTime = !FullTime ? EndTime : null;
             currentEvent.StartTime = !FullTime ? StartTime : null;
 
-            var uploadeResult = await StorageBll.UploadeImage(ImagePath, Date, currentEvent.ID);  
+            var uploadeResult = await StorageBll.UploadImage(ImagePath, Date, currentEvent.ID);  
             if(!Validate(uploadeResult))
                 return;
 
@@ -312,6 +315,13 @@ namespace SymptomTracker.ViewModel
             }
         }
         #endregion
+
+        private async void __DownloadImage()
+        {
+            var ImageResult = await StorageBll.DownloadImage(Date, m_Id);
+            if (Validate(ImageResult))
+                ImagePath = ImageResult.Result;
+        }
         #endregion
     }
 }
