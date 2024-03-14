@@ -107,7 +107,7 @@ namespace SymptomTracker.BLL
         private static string EncryptFile(string inputFilePath, string encryptionKey)
         {
             byte[] iv = new byte[16];
-            var outputFilePath = $"{inputFilePath}.encryption";
+            var outputFilePath =  $"{inputFilePath}.encryption";
             var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
             using (FileStream fsInput = new FileStream(inputFilePath, FileMode.Open))
@@ -135,7 +135,7 @@ namespace SymptomTracker.BLL
         private static string DecryptFile(string inputFilePath, string encryptionKey)
         {
             byte[] iv = new byte[16];
-            var outputFilePath = inputFilePath.Replace(".encryption", "");
+            var outputFilePath = Path.Combine(FileSystem.CacheDirectory, Guid.NewGuid().ToString(), ".encryption");
             var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
             using (FileStream fsInput = new FileStream(inputFilePath, FileMode.Open))

@@ -3,6 +3,7 @@ using SymptomTracker.Utils.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -85,7 +86,7 @@ namespace SymptomTracker.ViewModel
         public string Title
         {
             get => GetProperty<string>();
-            set => SetProperty(value, OnPerformSearch);
+            set => SetProperty(value, __OnPerformSearch);
         }
         public string SelectedTitle
         {
@@ -122,15 +123,12 @@ namespace SymptomTracker.ViewModel
         public string ImagePath
         {
             get => GetProperty<string>();
-            set => SetProperty(value);
+            set => SetProperty(value,()=> OnPropertyChanged(nameof(HasImage)));
         }
 
-        [Obsolete] //?
-        public ImageSource Image
-        {
-            get => GetProperty<ImageSource>();
-            set => SetProperty(value);
-        }
+        public bool HasImage => !string.IsNullOrEmpty(ImagePath);
+
+        public bool IsWindows => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
 
         public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
 
@@ -139,6 +137,7 @@ namespace SymptomTracker.ViewModel
         public RelayCommand SaveClick { get; set; }
         public RelayCommand TakePhotoClick { get; set; }
         public RelayCommand PickImageClick { get; set; }
+        public RelayCommand DeleteImageClick { get; set; }
         #endregion
         #endregion
 
@@ -149,21 +148,25 @@ namespace SymptomTracker.ViewModel
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
 
-            SaveClick = new RelayCommand(OnSaveClick);
-            TakePhotoClick = new RelayCommand(TakePhoto);
-            PerformSearch = new RelayCommand(OnPerformSearch);
-            PickImageClick = new RelayCommand(PickImage);
+            SaveClick = new RelayCommand(__OnSaveClick);
+            TakePhotoClick = new RelayCommand(__TakePhoto);
+            PerformSearch = new RelayCommand(__OnPerformSearch);
+            PickImageClick = new RelayCommand(__PickImage);
+            DeleteImageClick = new RelayCommand(() => ImagePath = null);
 
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
             Description = String.Empty;
-            OnPerformSearch();
+            __OnPerformSearch();
+
+            OnPropertyChanged(nameof(HasImage));
+            OnPropertyChanged(nameof(IsWindows));
         }
         #endregion
 
-        #region OnPerformSearch
-        private void OnPerformSearch()
+        #region __OnPerformSearch
+        private void __OnPerformSearch()
         {
             if (m_Titles != null)
             {
@@ -173,8 +176,8 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
-        #region OnSaveClick
-        private async void OnSaveClick()
+        #region __OnSaveClick
+        private async void __OnSaveClick()
         {
             var dayResult = await RealtimeDatabaseBll.GetDay(Date);
             Validate(dayResult);
@@ -258,8 +261,8 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
-        #region TakePhoto
-        public async void TakePhoto()
+        #region __TakePhoto
+        private async void __TakePhoto()
         {
             try
             {
@@ -277,7 +280,6 @@ namespace SymptomTracker.ViewModel
 
                         await sourceStream.CopyToAsync(localFileStream);
                         ImagePath = localFilePath;
-                        Image = ImageSource.FromStream(() => sourceStream);
                     }
                 }
             }
@@ -288,8 +290,8 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
-        #region PickImage
-        public async void PickImage()
+        #region __PickImage
+        private async void __PickImage()
         {
             try
             {
@@ -303,8 +305,6 @@ namespace SymptomTracker.ViewModel
                     if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
                         result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
                     {
-                        using var stream = await result.OpenReadAsync();
-                        Image = ImageSource.FromStream(() => stream);
                         ImagePath = result.FullPath;
                     }
                 }
@@ -316,12 +316,14 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
+        #region __DownloadImage
         private async void __DownloadImage()
         {
             var ImageResult = await StorageBll.DownloadImage(Date, m_Id);
             if (Validate(ImageResult))
                 ImagePath = ImageResult.Result;
         }
+        #endregion
         #endregion
     }
 }
