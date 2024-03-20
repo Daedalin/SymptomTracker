@@ -30,11 +30,12 @@ namespace SymptomTracker.ViewModel
             if (IsWorkRelated)
                 WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
 
-            __DownloadImage();
+            if (existingEvent.HasImage)
+                __DownloadImage();
 
             __Ini();
         }
-                
+
         public CreateEventViewModel(eEventType eventType)
         {
             m_Id = -1;
@@ -123,12 +124,13 @@ namespace SymptomTracker.ViewModel
         public string ImagePath
         {
             get => GetProperty<string>();
-            set => SetProperty(value,()=> OnPropertyChanged(nameof(HasImage)));
+            set => SetProperty(value, () => OnPropertyChanged(nameof(HasImage)));
         }
 
         public bool HasImage => !string.IsNullOrEmpty(ImagePath);
 
         public bool IsWindows => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
+        public bool ShImage => Settings?.Rights.HasFlag(eRights.Foto) ?? false;
 
         public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
 
@@ -203,10 +205,14 @@ namespace SymptomTracker.ViewModel
             currentEvent.Description = Description;
             currentEvent.EndTime = !FullTime ? EndTime : null;
             currentEvent.StartTime = !FullTime ? StartTime : null;
+            currentEvent.HasImage = !string.IsNullOrEmpty(ImagePath);
 
-            var uploadeResult = await StorageBll.UploadImage(ImagePath, Date, currentEvent.ID);  
-            if(!Validate(uploadeResult))
-                return;
+            if (!string.IsNullOrEmpty(ImagePath))
+            {
+                var uploadeResult = await StorageBll.UploadImage(ImagePath, Date, currentEvent.ID);
+                if (!Validate(uploadeResult))
+                    return;
+            }
 
             var Result = await RealtimeDatabaseBll.UpdateDay(day);
             if (Validate(Result))
@@ -285,7 +291,7 @@ namespace SymptomTracker.ViewModel
             }
             catch (PermissionException pe)
             {
-               await Shell.Current.DisplayAlert("Warning", pe.Message, "Ok");
+                await Shell.Current.DisplayAlert("Warning", pe.Message, "Ok");
             }
         }
         #endregion

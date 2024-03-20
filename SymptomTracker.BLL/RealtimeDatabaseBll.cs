@@ -63,6 +63,28 @@ namespace SymptomTracker.BLL
         }
         #endregion
 
+        #region GetSettings
+        public async Task<OperatingResult<Settings>> GetSettings()
+        {
+            try
+            {
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<Settings>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+
+                var Data = await m_firebaseClient.Child(LoginBll.GetUid())
+                                                 .Child("Settings")
+                                                 .OnceSingleAsync<Settings>();
+
+                return OperatingResult<Settings>.OK(Data);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<Settings>.Fail(ex);
+            }
+        }
+        #endregion
+
         #region GetLastTitles
         public async Task<OperatingResult<List<string>>> GetLastTitles(eEventType eventType)
         {

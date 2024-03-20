@@ -1,6 +1,7 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using Daedalin.Core.OperationResult;
 using SymptomTracker.BLL;
+using SymptomTracker.Utils.Entities;
 using SymptomTracker.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,9 @@ namespace SymptomTracker
             }
         }
 
+        public static Settings Settings { get; set; }
+        
+
         public virtual void OnAppearing() { }
 
         #region Validate
@@ -104,6 +108,12 @@ namespace SymptomTracker
             Validate(Result, false);
             if (!Result.Result && m_ViewModel != nameof(LoginViewModel))
                 PlsLogin();
+            else if(Settings == null)
+            {
+                var SettingsResult = await RealtimeDatabaseBll.GetSettings();
+                if(Validate(SettingsResult, false))
+                    Settings = SettingsResult.Result;
+            }
         }
         private void PlsLogin()
         {

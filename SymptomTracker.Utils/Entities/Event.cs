@@ -18,5 +18,6 @@ namespace SymptomTracker.Utils.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public bool FullTime { get; set; }
+        public bool HasImage { get; set; }
     }
 }

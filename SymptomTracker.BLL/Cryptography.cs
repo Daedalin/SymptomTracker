@@ -135,7 +135,7 @@ namespace SymptomTracker.BLL
         private static string DecryptFile(string inputFilePath, string encryptionKey)
         {
             byte[] iv = new byte[16];
-            var outputFilePath = Path.Combine(FileSystem.CacheDirectory, Guid.NewGuid().ToString(), ".encryption");
+            var outputFilePath = inputFilePath.Replace(".encryption","");
             var encryptionKeyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
             using (FileStream fsInput = new FileStream(inputFilePath, FileMode.Open))

@@ -102,7 +102,8 @@
                 <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
-            <VerticalStackLayout Margin="0,20,0,0">
+            <VerticalStackLayout Margin="0,20,0,0"
+                                 IsVisible="{Binding ShImage}">
                 <Label FontFamily="Consolas" Text="Foto"/>
                 <Grid WidthRequest="{Binding Width, Source={x:Reference List}}"
                       MaximumWidthRequest="{Binding Width, Source={x:Reference List}}">
@@ -128,12 +129,12 @@
                                 Command="{Binding DeleteImageClick}"/>
                     </VerticalStackLayout>
                 </Grid>
-
-                <Button Text="Speicher"
-                        Margin="0,20,0,0"
-                        Command="{Binding SaveClick}"/>
-
             </VerticalStackLayout >
+
+            <Button Text="Speicher"
+                    Margin="0,20,0,0"
+                    Command="{Binding SaveClick}"/>
+
         </VerticalStackLayout >
     </ScrollView>
 </ContentPage>
