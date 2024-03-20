@@ -18,12 +18,14 @@ namespace SymptomTracker.ViewModel
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
+            GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
         }
 
         #region Command
         public RelayCommandPara CreateEventClick { get; set; }
         public RelayCommand ShowDayClick { get; set; }
         public RelayCommand ShowSettingsClick { get; set; }
+        public RelayCommand GeneratingReportsClick { get; set; }
         #endregion
 
         #region OnCreateEventClick
@@ -59,6 +61,12 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
-        
+        public async void OnGeneratingReportsClick()
+        {
+            //Button disabel
+            await RealtimeDatabaseBll.GeneratingReports(eEventType.Symptom);
+        }
+
+
     }
 }
