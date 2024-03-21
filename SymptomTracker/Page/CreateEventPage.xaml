@@ -53,8 +53,7 @@
                         ItemDisplayBinding="{Binding Value}"
                         SelectedItem="{Binding SelectedType}"
                         HorizontalOptions="Start"
-                        MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
-                        WidthRequest="{Binding Width, Source={x:Reference List}}"/>
+                        WidthRequest="220"/>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Titel"/>
@@ -90,6 +89,8 @@
                 <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
+                         MaximumHeightRequest="315"
+                         AutoSize="TextChanges"
                          Placeholder="Beschribung"
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>
@@ -99,6 +100,34 @@
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
                 <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
+
+            <VerticalStackLayout Margin="0,20,0,0"
+                                 IsVisible="{Binding ShImage}">
+                <Label FontFamily="Consolas" Text="Foto"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Frame Margin="0,0,10,0">
+                        <Image Source="{Binding ImagePath}"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Button Text="Foto"
+                                IsVisible="{Binding IsWindows,Converter={StaticResource InverseBoolean}}"
+                                Command="{Binding TakePhotoClick}"
+                                Margin="0,0,0,10"/>
+                        <Button Text="Auswählen"
+                                Margin="0,0,0,10"
+                                Command="{Binding PickImageClick}"/>
+                        <Button Text="Löschen"
+                                IsEnabled="{Binding HasImage}"
+                                Command="{Binding DeleteImageClick}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </VerticalStackLayout >
 
             <Button Text="Speicher"
                     Margin="0,20,0,0"

@@ -3,6 +3,7 @@ using Daedalin.Core.OperationResult;
 using Firebase.Auth;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace SymptomTracker.BLL
         #endregion
 
         public string GetToken() => m_firebaseAuthClient?.User?.Credential?.RefreshToken; 
-        public string GetUid() => m_firebaseAuthClient?.User?.Uid; 
+        public string GetUid() => Debugger.IsAttached ? "Debug" : m_firebaseAuthClient?.User?.Uid; 
 
         #region All About Login
         #region CreateUser
