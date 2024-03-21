@@ -1,5 +1,6 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using Daedalin.Core.OperationResult;
+using Firebase.Auth.Requests;
 using SymptomTracker.BLL;
 using SymptomTracker.Utils.Entities;
 using SymptomTracker.ViewModel;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SymptomTracker
 {
+    delegate void NoDateDelegate();
     internal class ViewModelBase : DaedalinBaseViewModel
     {
         public string m_ViewModel;
@@ -62,7 +64,8 @@ namespace SymptomTracker
         }
 
         public static Settings Settings { get; set; }
-        
+
+        public event NoDateDelegate SettingsUpdate;
 
         public virtual void OnAppearing() { }
 
@@ -111,10 +114,17 @@ namespace SymptomTracker
             else if(Settings == null)
             {
                 var SettingsResult = await RealtimeDatabaseBll.GetSettings();
-                if(Validate(SettingsResult, false))
-                    Settings = SettingsResult.Result;
+                if (Validate(SettingsResult, false))
+                    SetSettings(SettingsResult.Result);
             }
         }
+
+        public void SetSettings(Settings settings)
+        {
+            Settings = settings;
+            SettingsUpdate?.Invoke();
+        }
+
         private void PlsLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage()

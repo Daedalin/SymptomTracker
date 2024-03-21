@@ -149,6 +149,7 @@ namespace SymptomTracker.ViewModel
         {
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
+            SettingsUpdate += __OnUpdateSettings;
 
             SaveClick = new RelayCommand(__OnSaveClick);
             TakePhotoClick = new RelayCommand(__TakePhoto);
@@ -328,6 +329,13 @@ namespace SymptomTracker.ViewModel
             var ImageResult = await StorageBll.DownloadImage(Date, m_Id);
             if (Validate(ImageResult))
                 ImagePath = ImageResult.Result;
+        }
+        #endregion
+
+        #region __OnUpdateSettings
+        private void __OnUpdateSettings()
+        {
+            OnPropertyChanged(nameof(ShImage));
         }
         #endregion
         #endregion

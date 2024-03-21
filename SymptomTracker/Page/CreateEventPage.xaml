@@ -53,8 +53,7 @@
                         ItemDisplayBinding="{Binding Value}"
                         SelectedItem="{Binding SelectedType}"
                         HorizontalOptions="Start"
-                        MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
-                        WidthRequest="{Binding Width, Source={x:Reference List}}"/>
+                        WidthRequest="220"/>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Titel"/>
@@ -105,8 +104,7 @@
             <VerticalStackLayout Margin="0,20,0,0"
                                  IsVisible="{Binding ShImage}">
                 <Label FontFamily="Consolas" Text="Foto"/>
-                <Grid WidthRequest="{Binding Width, Source={x:Reference List}}"
-                      MaximumWidthRequest="{Binding Width, Source={x:Reference List}}">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="100"/>
@@ -119,12 +117,12 @@
                     <VerticalStackLayout Grid.Column="1">
                         <Button Text="Foto"
                                 IsVisible="{Binding IsWindows,Converter={StaticResource InverseBoolean}}"
-                                Command="{Binding TakePhotoClick}"/>
+                                Command="{Binding TakePhotoClick}"
+                                Margin="0,0,0,10"/>
                         <Button Text="Auswählen"
-                                Margin="0,10,0,0"
+                                Margin="0,0,0,10"
                                 Command="{Binding PickImageClick}"/>
                         <Button Text="Löschen"
-                                Margin="0,10,0,0"
                                 IsEnabled="{Binding HasImage}"
                                 Command="{Binding DeleteImageClick}"/>
                     </VerticalStackLayout>
