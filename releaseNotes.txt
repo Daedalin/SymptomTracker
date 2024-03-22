@@ -1,4 +1,4 @@
 ❗Bitte dengt dran euern Key vor dem update zu sichern.❗
 
 Version 1.1.0
-Nun können Premium Nutzer können nur Bilder bei Events hochladen. 
+Nun können Premium Nutzer Bilder bei Events hochladen. 
