@@ -5,7 +5,7 @@ on:
         paths:
         - '**DebugAndroidManifest.xml'   
         branches:
-        - dev 
+        - Dev
 
 jobs:
   build:
