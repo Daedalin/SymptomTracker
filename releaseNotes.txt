@@ -1,11 +1,4 @@
 ❗Bitte dengt dran euern Key vor dem update zu sichern.❗
 
-Version 1.0.0.0
-Hinzufügen eines App Icons 
-
-Version 0.1.0
-Änderungen:
-Ihr könnt nun die Events bearbeiten.
-Es gibt nun ein neues Event in dem ihr eure Stimmung festhalten könnt.
-Desweiteren könnt ihr bei Stress und der Stimmung makieren, ob es arbeitsbezogen ist.
-Als letztes gibt es nun bei allen Events ein ganztägig-Flag mit dem ihr die Zeit ausschalten könnt.
+Version 1.1.0
+Nun können Premium Nutzer können nur Bilder bei Events hochladen. 
