@@ -3,6 +3,7 @@ using SymptomTracker.Utils.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -15,6 +16,7 @@ namespace SymptomTracker.ViewModel
         private eEventType m_EventType;
         private List<string> m_Titles;
 
+        #region Constructor
         public CreateEventViewModel(DateTime date, Event existingEvent)
         {
             Date = date;
@@ -25,8 +27,11 @@ namespace SymptomTracker.ViewModel
             Description = existingEvent.Description;
             EndTime = existingEvent.EndTime ?? TimeSpan.Zero;
             StartTime = existingEvent.StartTime ?? TimeSpan.Zero;
-            if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
+            if (IsWorkRelated)
                 WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
+
+            if (existingEvent.HasImage)
+                __DownloadImage();
 
             __Ini();
         }
@@ -37,14 +42,15 @@ namespace SymptomTracker.ViewModel
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
-            Description = String.Empty;
+            Description = " ";
             EndTime = DateTime.Now.TimeOfDay;
             StartTime = DateTime.Now.TimeOfDay;
 
             __Ini();
         }
+        #endregion
 
-
+        #region Propertys
         public DateTime Date
         {
             get => GetProperty<DateTime>();
@@ -75,13 +81,13 @@ namespace SymptomTracker.ViewModel
             {
                 m_EventType = value.Key;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsStress));
+                OnPropertyChanged(nameof(IsWorkRelated));
             }
         }
         public string Title
         {
             get => GetProperty<string>();
-            set => SetProperty(value, OnPerformSearch);
+            set => SetProperty(value, __OnPerformSearch);
         }
         public string SelectedTitle
         {
@@ -115,26 +121,55 @@ namespace SymptomTracker.ViewModel
             set => SetProperty(value);
         }
 
-        public bool IsStress => m_EventType == eEventType.Stress;
+        public string ImagePath
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value, () => OnPropertyChanged(nameof(HasImage)));
+        }
 
+        public bool HasImage => !string.IsNullOrEmpty(ImagePath);
+
+        public bool IsWindows => DeviceInfo.Current.Platform == DevicePlatform.WinUI;
+        public bool ShImage => Settings?.Rights.HasFlag(eRights.Foto) ?? false;
+
+        public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
+
+        #region Command
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
+        public RelayCommand TakePhotoClick { get; set; }
+        public RelayCommand PickImageClick { get; set; }
+        public RelayCommand DeleteImageClick { get; set; }
+        #endregion
+        #endregion
 
+        #region private methods
+        #region __Ini
         private async void __Ini()
         {
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
+            SettingsUpdate += __OnUpdateSettings;
 
-            SaveClick = new RelayCommand(OnSaveClick);
-            PerformSearch = new RelayCommand(OnPerformSearch);
+            SaveClick = new RelayCommand(__OnSaveClick);
+            TakePhotoClick = new RelayCommand(__TakePhoto);
+            PerformSearch = new RelayCommand(__OnPerformSearch);
+            PickImageClick = new RelayCommand(__PickImage);
+            DeleteImageClick = new RelayCommand(() => ImagePath = null);
 
-            var TitleResult = await FirebaseBll.GetLastTitles(m_EventType);
+            var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
-            OnPerformSearch();
-        }
+            Description = String.Empty;
+            __OnPerformSearch();
 
-        private void OnPerformSearch()
+            OnPropertyChanged(nameof(HasImage));
+            OnPropertyChanged(nameof(IsWindows));
+        }
+        #endregion
+
+        #region __OnPerformSearch
+        private void __OnPerformSearch()
         {
             if (m_Titles != null)
             {
@@ -142,9 +177,12 @@ namespace SymptomTracker.ViewModel
                 OnPropertyChanged(nameof(TitleSearchResults));
             }
         }
-        private async void OnSaveClick()
+        #endregion
+
+        #region __OnSaveClick
+        private async void __OnSaveClick()
         {
-            var dayResult = await FirebaseBll.GetDay(Date);
+            var dayResult = await RealtimeDatabaseBll.GetDay(Date);
             Validate(dayResult);
 
             if (!dayResult.Success)
@@ -160,48 +198,146 @@ namespace SymptomTracker.ViewModel
             else
                 day = dayResult.Result;
 
-            Event newEvent;
-            if (m_Id != -1)
-                newEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
-            else
-            {
-                if (m_EventType == eEventType.Stress || m_EventType == eEventType.Mood)
-                {
-                    newEvent = new WorkRelatedEvent()
-                    {
-                        WorkRelated = WorkRelated
-                    };
-                }
-                else
-                    newEvent = new Event();
+            Event currentEvent = __CreateOrGetEvent(day);
 
-                day.Events.Add(newEvent);
-                newEvent.ID = day.Events.Count() + 1;
+            currentEvent.Name = Title;
+            currentEvent.FullTime = FullTime;
+            currentEvent.EventType = m_EventType;
+            currentEvent.Description = Description;
+            currentEvent.EndTime = !FullTime ? EndTime : null;
+            currentEvent.StartTime = !FullTime ? StartTime : null;
+            currentEvent.HasImage = !string.IsNullOrEmpty(ImagePath);
+
+            if (!string.IsNullOrEmpty(ImagePath))
+            {
+                var uploadeResult = await StorageBll.UploadImage(ImagePath, Date, currentEvent.ID);
+                if (!Validate(uploadeResult))
+                    return;
             }
 
-            newEvent.Name = Title;
-            newEvent.FullTime = FullTime;
-            newEvent.EventType = m_EventType;
-            newEvent.Description = Description;
-            newEvent.EndTime = !FullTime ? EndTime : null;
-            newEvent.StartTime = !FullTime ? StartTime : null;
-
-
-
-
-            var Result = await FirebaseBll.UpdateDay(day);
+            var Result = await RealtimeDatabaseBll.UpdateDay(day);
             if (Validate(Result))
             {
                 if (!m_Titles.Contains(Title) && !string.IsNullOrEmpty(Title))
                 {
-                    var AddTitlesResult = await FirebaseBll.AddLastTitles(m_EventType, Title);
+                    var AddTitlesResult = await RealtimeDatabaseBll.AddLastTitles(m_EventType, Title);
                     Validate(AddTitlesResult);
                 }
 
                 await Shell.Current.Navigation.PopAsync();
             }
-
-
         }
+        #endregion
+
+        #region __CreateOrGetEvent
+        private Event __CreateOrGetEvent(Day day)
+        {
+            Event currentEvent;
+            if (m_Id != -1)
+            {
+                currentEvent = day.Events.FirstOrDefault(t => t.ID == m_Id);
+                if (IsWorkRelated && currentEvent is not WorkRelatedEvent)
+                {
+                    day.Events.Remove(currentEvent);
+                    currentEvent = new WorkRelatedEvent()
+                    {
+                        ID = m_Id
+                    };
+                    day.Events.Add(currentEvent);
+                }
+                if (IsWorkRelated)
+                    (currentEvent as WorkRelatedEvent).WorkRelated = WorkRelated;
+            }
+            else
+            {
+                if (IsWorkRelated)
+                {
+                    currentEvent = new WorkRelatedEvent()
+                    {
+                        WorkRelated = WorkRelated
+                    };
+                }
+                else
+                    currentEvent = new Event();
+
+                day.Events.Add(currentEvent);
+                currentEvent.ID = day.Events.Count() + 1;
+            }
+
+            return currentEvent;
+        }
+        #endregion
+
+        #region __TakePhoto
+        private async void __TakePhoto()
+        {
+            try
+            {
+                if (MediaPicker.Default.IsCaptureSupported)
+                {
+                    FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
+
+                    if (photo != null)
+                    {
+                        // save the file into local storage
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                        using Stream sourceStream = await photo.OpenReadAsync();
+                        using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                        await sourceStream.CopyToAsync(localFileStream);
+                        ImagePath = localFilePath;
+                    }
+                }
+            }
+            catch (PermissionException pe)
+            {
+                await Shell.Current.DisplayAlert("Warning", pe.Message, "Ok");
+            }
+        }
+        #endregion
+
+        #region __PickImage
+        private async void __PickImage()
+        {
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    FileTypes = FilePickerFileType.Images,
+                    PickerTitle = "Image auswählen"
+                });
+                if (result != null)
+                {
+                    if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
+                        result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ImagePath = result.FullPath;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Fehler", ex.Message, "ok");
+            }
+        }
+        #endregion
+
+        #region __DownloadImage
+        private async void __DownloadImage()
+        {
+            var ImageResult = await StorageBll.DownloadImage(Date, m_Id);
+            if (Validate(ImageResult))
+                ImagePath = ImageResult.Result;
+        }
+        #endregion
+
+        #region __OnUpdateSettings
+        private void __OnUpdateSettings()
+        {
+            OnPropertyChanged(nameof(ShImage));
+        }
+        #endregion
+        #endregion
     }
 }

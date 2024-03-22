@@ -1,6 +1,8 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using Daedalin.Core.OperationResult;
+using Firebase.Auth.Requests;
 using SymptomTracker.BLL;
+using SymptomTracker.Utils.Entities;
 using SymptomTracker.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -11,10 +13,13 @@ using System.Threading.Tasks;
 
 namespace SymptomTracker
 {
+    delegate void NoDateDelegate();
     internal class ViewModelBase : DaedalinBaseViewModel
     {
-        private static FirebaseBll m_FirebaseBll;
         public string m_ViewModel;
+        private static LoginBll m_LoginBll;
+        private static StorageBll m_StorageBll;
+        private static RealtimeDatabaseBll m_RealtimeDatabaseBll;
 
         public ViewModelBase() : base()
         {
@@ -22,22 +27,47 @@ namespace SymptomTracker
 
             if (m_ViewModel == nameof(MainViewModel))
             {
-                FirebaseBll.PlsLogin += PlsLogin;
+                LoginBll.PlsLogin += PlsLogin;
             }
 
             HasLogin();
         }
 
-
-        public static FirebaseBll FirebaseBll
+        public static LoginBll LoginBll
         {
             get
             {
-                if (m_FirebaseBll == null)
-                    m_FirebaseBll = new FirebaseBll();
-                return m_FirebaseBll;
+                if (m_LoginBll == null)
+                    m_LoginBll = new LoginBll();
+                return m_LoginBll;
             }
         }
+
+        public static RealtimeDatabaseBll RealtimeDatabaseBll
+        {
+            get
+            {
+                if (m_RealtimeDatabaseBll == null)
+                    m_RealtimeDatabaseBll = new RealtimeDatabaseBll();
+                return m_RealtimeDatabaseBll;
+            }
+        }
+
+        public static StorageBll StorageBll
+        {
+            get
+            {
+                if (m_StorageBll == null)
+                    m_StorageBll = new StorageBll();
+                return m_StorageBll;
+            }
+        }
+
+        public static Settings Settings { get; set; }
+
+        public event NoDateDelegate SettingsUpdate;
+
+        public virtual void OnAppearing() { }
 
         #region Validate
         public bool Validate<T>(OperatingResult<T> operatingResult) => Validate<T>(operatingResult, true);
@@ -77,11 +107,24 @@ namespace SymptomTracker
 
         private async void HasLogin()
         {
-            var Result = await FirebaseBll.Login();
+            var Result = await LoginBll.Login();
             Validate(Result, false);
             if (!Result.Result && m_ViewModel != nameof(LoginViewModel))
                 PlsLogin();
+            else if(Settings == null)
+            {
+                var SettingsResult = await RealtimeDatabaseBll.GetSettings();
+                if (Validate(SettingsResult, false))
+                    SetSettings(SettingsResult.Result);
+            }
         }
+
+        public void SetSettings(Settings settings)
+        {
+            Settings = settings;
+            SettingsUpdate?.Invoke();
+        }
+
         private void PlsLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage()

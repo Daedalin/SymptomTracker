@@ -26,4 +26,11 @@ namespace SymptomTracker.Utils.Entities
         Stress = 3,
         Mood = 4,
     }
+
+    [Flags]
+    public enum eRights
+    {
+        None = 0,
+        Foto = 1,
+    }
 }

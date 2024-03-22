@@ -7,19 +7,23 @@
     <ContentPage.Resources>
         <conv:InverseBooleanConverter x:Key="InverseBoolean"/>
     </ContentPage.Resources>
-    <Grid>
-        <VerticalStackLayout MaximumWidthRequest="700" Margin="20,0,20,20">
+    <ScrollView>
+        <VerticalStackLayout x:Name="List"
+                             MaximumWidthRequest="700"
+                             Margin="20,0,20,20">
             <!--Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
                 <VerticalStackLayout Margin="0,0,5,0">
                     <Label FontFamily="Consolas" Text="Datum"/>
                     <DatePicker Date="{Binding Date}"  
                                 FontSize="18"
+                                Margin="0,10,0,0"
                                 MinimumWidthRequest="150"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Margin="5,0,0,0">
                     <Label FontFamily="Consolas" Text="Ganztägig"/>
-                    <CheckBox IsChecked="{Binding FullTime}"/>
+                    <CheckBox IsChecked="{Binding FullTime}"
+                              Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
             <!--Time-->
@@ -28,31 +32,37 @@
                     <Label FontFamily="Consolas" Text="Von"/>
                     <TimePicker Time="{Binding StartTime}"
                                 FontSize="18"
+                                Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
-                <VerticalStackLayout Margin="10,0,0,0">
+                <VerticalStackLayout Margin="20,0,0,0">
                     <Label FontFamily="Consolas" Text="Bis"/>
                     <TimePicker Time="{Binding EndTime}"
                                 FontSize="18"
+                                Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
             <!--Type-->
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Type"/>
-                <VerticalStackLayout>
-                    <Picker x:Name="TypePicker"
-                                Margin="0,10,0,0"
-                                FontSize="18"
-                                ItemsSource="{Binding Typs}"
-                                ItemDisplayBinding="{Binding Value}"
-                                SelectedItem="{Binding SelectedType}"
-                                WidthRequest="{Binding Width, Source={x:Reference searchBar}}"/>
-                </VerticalStackLayout>
+                <Picker x:Name="TypePicker"
+                        Margin="0,10,0,0"
+                        FontSize="18"
+                        ItemsSource="{Binding Typs}"
+                        ItemDisplayBinding="{Binding Value}"
+                        SelectedItem="{Binding SelectedType}"
+                        HorizontalOptions="Start"
+                        WidthRequest="220"/>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Titel"/>
-                <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
+                <Frame CornerRadius="10" 
+                       Padding="3" 
+                       Margin="0,10,0,0"
+                       HorizontalOptions="Start"
+                       MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                       WidthRequest="{Binding Width, Source={x:Reference List}}">
                     <VerticalStackLayout>
                         <SearchBar x:Name="searchBar"
                                    SearchCommand="{Binding PerformSearch}"
@@ -76,25 +86,53 @@
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label FontFamily="Consolas" Text="Beschreibung"/>
-                <VerticalStackLayout>
-                    <Entry x:Name="Description"
-                           Text="{Binding Description,Mode=TwoWay}"
-                           Margin="0,10,0,0"
-                           Placeholder="Beschribung"
-                           FontSize="18"
-                           MaximumWidthRequest="700"/>
-                </VerticalStackLayout>
+                <Editor  x:Name="Description"
+                         Text="{Binding Description,Mode=TwoWay}"
+                         Margin="0,10,0,0"
+                         MaximumHeightRequest="315"
+                         AutoSize="TextChanges"
+                         Placeholder="Beschribung"
+                         MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                         FontSize="18"/>
             </VerticalStackLayout>
 
-            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsStress}">
+            <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
                 <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
+
+            <VerticalStackLayout Margin="0,20,0,0"
+                                 IsVisible="{Binding ShImage}">
+                <Label FontFamily="Consolas" Text="Foto"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Frame Margin="0,0,10,0">
+                        <Image Source="{Binding ImagePath}"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Button Text="Foto"
+                                IsVisible="{Binding IsWindows,Converter={StaticResource InverseBoolean}}"
+                                Command="{Binding TakePhotoClick}"
+                                Margin="0,0,0,10"/>
+                        <Button Text="Auswählen"
+                                Margin="0,0,0,10"
+                                Command="{Binding PickImageClick}"/>
+                        <Button Text="Löschen"
+                                IsEnabled="{Binding HasImage}"
+                                Command="{Binding DeleteImageClick}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </VerticalStackLayout >
 
             <Button Text="Speicher"
                     Margin="0,20,0,0"
                     Command="{Binding SaveClick}"/>
 
         </VerticalStackLayout >
-    </Grid>
+    </ScrollView>
 </ContentPage>

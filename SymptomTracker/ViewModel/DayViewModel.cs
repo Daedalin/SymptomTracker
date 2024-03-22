@@ -42,6 +42,12 @@ namespace SymptomTracker.ViewModel
         public ICommand EditClick { get; set; }
 
 
+        public override void OnAppearing()
+        {
+            __OnDateChange();
+            base.OnAppearing();
+        }
+
         private async void __OnEditClick(int Event)
         {
             var clickedEvent = Events.FirstOrDefault(t => t.ID == Event);
@@ -58,7 +64,7 @@ namespace SymptomTracker.ViewModel
         private async void __OnDateChange()
         {
             ViewTitle = Base_Title + Date.ToString("dd. MMM yyyy");
-            var GetDayReult = await FirebaseBll.GetDay(Date);
+            var GetDayReult = await RealtimeDatabaseBll.GetDay(Date);
             if (Validate(GetDayReult) && GetDayReult?.Result?.Events != null)
             {
                 Events = GetDayReult.Result.Events;
