@@ -1,4 +1,8 @@
 ❗Bitte dengt dran euern Key vor dem update zu sichern.❗
 
-Version 1.1.0
+Version 1.1.1
+Bugfixes:
+Fix App name
+
+Futures:
 Nun können Premium Nutzer Bilder bei Events hochladen. 
