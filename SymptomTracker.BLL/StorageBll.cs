@@ -73,20 +73,23 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<string>.Fail(ClientRault.Message, eMessageType.Error);
 
-                var Task = await m_FirebaseStorage.Child(LoginBll.GetUid())
-                                            .Child(FileName)
-                                            .GetDownloadUrlAsync();
+                var DownloadUrl = await m_FirebaseStorage.Child(LoginBll.GetUid())
+                                                   .Child(FileName)
+                                                   .GetDownloadUrlAsync();
 
-                using (var client = new HttpClient())
+                await Task.Run(() =>
                 {
-                    using (var s = client.GetStreamAsync(Task))
+                    using (var client = new HttpClient())
                     {
-                        using (var fs = new FileStream(encryptionPath, FileMode.OpenOrCreate))
+                        using (var s = client.GetStreamAsync(DownloadUrl))
                         {
-                            s.Result.CopyTo(fs);
+                            using (var fs = new FileStream(encryptionPath, FileMode.OpenOrCreate))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
                         }
                     }
-                }
+                });
 
                 return await Cryptography.Decrypt(encryptionPath, true);
             }
