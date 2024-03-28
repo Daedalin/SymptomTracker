@@ -62,38 +62,46 @@ namespace SymptomTracker.BLL
         #endregion
 
         #region DownloadImage
-        public async Task<OperatingResult<string>> DownloadImage(DateTime date, int EventId)
+        public Task<OperatingResult<string>> DownloadImage(DateTime date, int EventId)
         {
-            try
+            return Task.Run(() =>
             {
-                var FileName = $"{date.ToShortDateString()}_{EventId}.png";
-                var encryptionPath = Path.Combine(FileSystem.CacheDirectory, $"{FileName}.encryption");
-
-                var ClientRault = await CreateFirebaseClient();
-                if (!ClientRault.Success)
-                    return OperatingResult<string>.Fail(ClientRault.Message, eMessageType.Error);
-
-                var Task = await m_FirebaseStorage.Child(LoginBll.GetUid())
-                                            .Child(FileName)
-                                            .GetDownloadUrlAsync();
-
-                using (var client = new HttpClient())
+                try
                 {
-                    using (var s = client.GetStreamAsync(Task))
+                    var FileName = $"{date.ToShortDateString()}_{EventId}.png";
+                    var encryptionPath = Path.Combine(FileSystem.CacheDirectory, $"{FileName}.encryption");
+
+                    var ClientRault = CreateFirebaseClient().GetAwaiter()
+                                                            .GetResult();
+                    if (!ClientRault.Success)
+                        return OperatingResult<string>.Fail(ClientRault.Message, eMessageType.Error);
+
+                    var DownloadUrl = m_FirebaseStorage.Child(LoginBll.GetUid())
+                                                       .Child(FileName)
+                                                       .GetDownloadUrlAsync()
+                                                       .GetAwaiter()
+                                                       .GetResult();
+
+                    using (var client = new HttpClient())
                     {
-                        using (var fs = new FileStream(encryptionPath, FileMode.OpenOrCreate))
+                        using (var s = client.GetStreamAsync(DownloadUrl))
                         {
-                            s.Result.CopyTo(fs);
+                            using (var fs = new FileStream(encryptionPath, FileMode.OpenOrCreate))
+                            {
+                                s.Result.CopyTo(fs);
+                            }
                         }
                     }
-                }
 
-                return await Cryptography.Decrypt(encryptionPath, true);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<string>.Fail(ex);
-            }
+                    return Cryptography.Decrypt(encryptionPath, true)
+                                       .GetAwaiter()
+                                       .GetResult();
+                }
+                catch (Exception ex)
+                {
+                    return OperatingResult<string>.Fail(ex);
+                }
+            });
         }
         #endregion
 
