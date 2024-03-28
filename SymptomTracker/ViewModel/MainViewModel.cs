@@ -18,6 +18,7 @@ namespace SymptomTracker.ViewModel
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
+            ViewTitle = "Symptom Tracker";
         }
 
         #region Command
