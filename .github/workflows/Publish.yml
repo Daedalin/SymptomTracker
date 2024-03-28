@@ -4,9 +4,9 @@
 name: Publish
 
 on:
-  workflow_dispatch:
-    branches:
-        - master 
+  push:
+    tags:
+    - '*' 
   
 jobs:
   build:
@@ -56,4 +56,5 @@ jobs:
               appId: ${{secrets.FIREBASE_APP_ID}}
               serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
               releaseNotesFile: releaseNotes.txt
+              groups: internal_tester
               file: SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
