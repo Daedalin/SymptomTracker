@@ -62,23 +62,26 @@ namespace SymptomTracker.BLL
         #endregion
 
         #region DownloadImage
-        public async Task<OperatingResult<string>> DownloadImage(DateTime date, int EventId)
+        public Task<OperatingResult<string>> DownloadImage(DateTime date, int EventId)
         {
-            try
+            return Task.Run(() =>
             {
-                var FileName = $"{date.ToShortDateString()}_{EventId}.png";
-                var encryptionPath = Path.Combine(FileSystem.CacheDirectory, $"{FileName}.encryption");
-
-                var ClientRault = await CreateFirebaseClient();
-                if (!ClientRault.Success)
-                    return OperatingResult<string>.Fail(ClientRault.Message, eMessageType.Error);
-
-                var DownloadUrl = await m_FirebaseStorage.Child(LoginBll.GetUid())
-                                                   .Child(FileName)
-                                                   .GetDownloadUrlAsync();
-
-                await Task.Run(() =>
+                try
                 {
+                    var FileName = $"{date.ToShortDateString()}_{EventId}.png";
+                    var encryptionPath = Path.Combine(FileSystem.CacheDirectory, $"{FileName}.encryption");
+
+                    var ClientRault = CreateFirebaseClient().GetAwaiter()
+                                                            .GetResult();
+                    if (!ClientRault.Success)
+                        return OperatingResult<string>.Fail(ClientRault.Message, eMessageType.Error);
+
+                    var DownloadUrl = m_FirebaseStorage.Child(LoginBll.GetUid())
+                                                       .Child(FileName)
+                                                       .GetDownloadUrlAsync()
+                                                       .GetAwaiter()
+                                                       .GetResult();
+
                     using (var client = new HttpClient())
                     {
                         using (var s = client.GetStreamAsync(DownloadUrl))
@@ -89,14 +92,16 @@ namespace SymptomTracker.BLL
                             }
                         }
                     }
-                });
 
-                return await Cryptography.Decrypt(encryptionPath, true);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<string>.Fail(ex);
-            }
+                    return Cryptography.Decrypt(encryptionPath, true)
+                                       .GetAwaiter()
+                                       .GetResult();
+                }
+                catch (Exception ex)
+                {
+                    return OperatingResult<string>.Fail(ex);
+                }
+            });
         }
         #endregion
 
