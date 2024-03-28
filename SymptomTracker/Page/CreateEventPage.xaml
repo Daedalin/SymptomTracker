@@ -14,14 +14,14 @@
             <!--Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
                 <VerticalStackLayout Margin="0,0,5,0">
-                    <Label FontFamily="Consolas" Text="Datum"/>
+                    <Label Text="Datum"/>
                     <DatePicker Date="{Binding Date}"  
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="150"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Margin="5,0,0,0">
-                    <Label FontFamily="Consolas" Text="Ganztägig"/>
+                    <Label Text="Ganztägig"/>
                     <CheckBox IsChecked="{Binding FullTime}"
                               Margin="0,10,0,0"/>
                 </VerticalStackLayout>
@@ -29,14 +29,14 @@
             <!--Time-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding FullTime,Converter={StaticResource InverseBoolean}}">
                 <VerticalStackLayout Margin="0,0,0,10">
-                    <Label FontFamily="Consolas" Text="Von"/>
+                    <Label Text="Von"/>
                     <TimePicker Time="{Binding StartTime}"
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Margin="20,0,0,0">
-                    <Label FontFamily="Consolas" Text="Bis"/>
+                    <Label Text="Bis"/>
                     <TimePicker Time="{Binding EndTime}"
                                 FontSize="18"
                                 Margin="0,10,0,0"
@@ -45,7 +45,7 @@
             </HorizontalStackLayout>
             <!--Type-->
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Type"/>
+                <Label Text="Type"/>
                 <Picker x:Name="TypePicker"
                         Margin="0,10,0,0"
                         FontSize="18"
@@ -56,7 +56,7 @@
                         WidthRequest="220"/>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Titel"/>
+                <Label Text="Titel"/>
                 <Frame CornerRadius="10" 
                        Padding="3" 
                        Margin="0,10,0,0"
@@ -85,7 +85,7 @@
                 </Frame>
             </VerticalStackLayout>
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Beschreibung"/>
+                <Label Text="Beschreibung"/>
                 <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
@@ -98,12 +98,12 @@
 
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
-                <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
+                <Label Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
             <VerticalStackLayout Margin="0,20,0,0"
                                  IsVisible="{Binding ShImage}">
-                <Label FontFamily="Consolas" Text="Foto"/>
+                <Label Text="Foto"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
