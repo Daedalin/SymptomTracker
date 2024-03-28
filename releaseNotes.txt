@@ -1,8 +1,9 @@
 ❗Bitte dengt dran euern Key vor dem update zu sichern.❗
 
-Version 1.1.1
+Version 1.1.2
 Bugfixes:
-Fix App name
+Bilder können nun auf Android wieder angezeigt werden.
+UI wünsche, wurden umgesetzt.
 
 Futures:
 Nun können Premium Nutzer Bilder bei Events hochladen. 

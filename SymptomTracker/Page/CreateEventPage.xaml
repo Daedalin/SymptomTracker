@@ -11,41 +11,45 @@
         <VerticalStackLayout x:Name="List"
                              MaximumWidthRequest="700"
                              Margin="20,0,20,20">
-            <!--Date-->
+            <!--#region Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
                 <VerticalStackLayout Margin="0,0,5,0">
-                    <Label FontFamily="Consolas" Text="Datum"/>
+                    <Label Text="Datum"/>
                     <DatePicker Date="{Binding Date}"  
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="150"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Margin="5,0,0,0">
-                    <Label FontFamily="Consolas" Text="Ganztägig"/>
+                    <Label Text="Ganztägig"/>
                     <CheckBox IsChecked="{Binding FullTime}"
                               Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-            <!--Time-->
+            <!--#endregion-->
+            
+            <!--#region Time-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding FullTime,Converter={StaticResource InverseBoolean}}">
                 <VerticalStackLayout Margin="0,0,0,10">
-                    <Label FontFamily="Consolas" Text="Von"/>
+                    <Label Text="Von"/>
                     <TimePicker Time="{Binding StartTime}"
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Margin="20,0,0,0">
-                    <Label FontFamily="Consolas" Text="Bis"/>
+                    <Label Text="Bis"/>
                     <TimePicker Time="{Binding EndTime}"
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-            <!--Type-->
+            <!--#endregion-->
+            
+            <!--#region Type-->
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Type"/>
+                <Label Text="Typ"/>
                 <Picker x:Name="TypePicker"
                         Margin="0,10,0,0"
                         FontSize="18"
@@ -55,8 +59,11 @@
                         HorizontalOptions="Start"
                         WidthRequest="220"/>
             </VerticalStackLayout>
+            <!--#endregion-->
+
+            <!--#region Titel-->
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Titel"/>
+                <Label Text="Titel"/>
                 <Frame CornerRadius="10" 
                        Padding="3" 
                        Margin="0,10,0,0"
@@ -69,13 +76,15 @@
                                    Text="{Binding Title}"/>
                         <ListView x:Name="searchResults"
                                   ItemsSource="{Binding TitleSearchResults, Mode=TwoWay}"
-                                  HeightRequest="100"
+                                  HeightRequest="150"
+                                  Margin="10,10,10,0"
                                   SelectedItem="{Binding SelectedTitle}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
                                         <Label Text="{Binding}"
-                                           TextColor="{AppThemeBinding Light=Black, Dark=White}">
+                                               TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                               VerticalTextAlignment="Center">
                                         </Label>
                                     </ViewCell>
                                 </DataTemplate>
@@ -84,52 +93,67 @@
                     </VerticalStackLayout>
                 </Frame>
             </VerticalStackLayout>
+            <!--#endregion-->
+
+            <!--#region Description-->
             <VerticalStackLayout Margin="0,20,0,0">
-                <Label FontFamily="Consolas" Text="Beschreibung"/>
+                <Label Text="Beschreibung"/>
                 <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
                          MaximumHeightRequest="315"
                          AutoSize="TextChanges"
-                         Placeholder="Beschribung"
+                         Placeholder="Beschreibung"
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>
             </VerticalStackLayout>
+            <!--#endregion-->
 
+            <!--#region WorkRelated-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
-                <Label FontFamily="Consolas" Text="Arbeitsbedingt" VerticalOptions="Center"/>
+                <Label Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
+            <!--#endregion-->
 
+            <!--#region Image-->
             <VerticalStackLayout Margin="0,20,0,0"
                                  IsVisible="{Binding ShImage}">
-                <Label FontFamily="Consolas" Text="Foto"/>
+                <Label Text="Foto"/>
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="100"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="65"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>                    
 
-                    <Frame Margin="0,0,10,0">
-                        <Image Source="{Binding ImagePath}"/>
-                    </Frame>
-
-                    <VerticalStackLayout Grid.Column="1">
-                        <Button Text="Foto"
+                    <Grid Grid.Row="0" Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{OnPlatform Android=*, WinUI=Auto}"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Text="Aufnehmen"
                                 IsVisible="{Binding IsWindows,Converter={StaticResource InverseBoolean}}"
                                 Command="{Binding TakePhotoClick}"
-                                Margin="0,0,0,10"/>
+                                Margin="0,0,5,0"/>
                         <Button Text="Auswählen"
-                                Margin="0,0,0,10"
+                                Grid.Column="1"
+                                Margin="0,0,5,0"
                                 Command="{Binding PickImageClick}"/>
                         <Button Text="Löschen"
+                                Grid.Column="2"
                                 IsEnabled="{Binding HasImage}"
                                 Command="{Binding DeleteImageClick}"/>
-                    </VerticalStackLayout>
+                    </Grid>
+
+                    <Frame Grid.Row="1" IsVisible="{Binding HasImage}">
+                        <Image Source="{Binding ImagePath}" HeightRequest="300"/>
+                    </Frame>
                 </Grid>
             </VerticalStackLayout >
+            <!--#endregion-->
 
-            <Button Text="Speicher"
+            <Button Text="Speichern"
                     Margin="0,20,0,0"
                     Command="{Binding SaveClick}"/>
 

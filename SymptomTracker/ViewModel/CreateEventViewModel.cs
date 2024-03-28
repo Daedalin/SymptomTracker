@@ -159,7 +159,7 @@ namespace SymptomTracker.ViewModel
 
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
-            m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result;
+            m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result.OrderBy(t=>t).ToList();
             Description = String.Empty;
             __OnPerformSearch();
 
