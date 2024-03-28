@@ -67,7 +67,9 @@ namespace SymptomTracker.ViewModel
             var GetDayReult = await RealtimeDatabaseBll.GetDay(Date);
             if (Validate(GetDayReult) && GetDayReult?.Result?.Events != null)
             {
-                Events = GetDayReult.Result.Events;
+                Events = GetDayReult.Result.Events.OrderBy(t=>t.StartTime)
+                                                  .ThenBy(t=>t.EndTime)
+                                                  .ToList();
                 IsHolyday = GetDayReult.Result.IsHoliday;
             }
             else
