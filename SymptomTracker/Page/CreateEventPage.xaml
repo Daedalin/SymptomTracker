@@ -11,7 +11,7 @@
         <VerticalStackLayout x:Name="List"
                              MaximumWidthRequest="700"
                              Margin="20,0,20,20">
-            <!--Date-->
+            <!--#region Date-->
             <HorizontalStackLayout Margin="0,20,0,0">
                 <VerticalStackLayout Margin="0,0,5,0">
                     <Label Text="Datum"/>
@@ -26,7 +26,9 @@
                               Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-            <!--Time-->
+            <!--#endregion-->
+            
+            <!--#region Time-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding FullTime,Converter={StaticResource InverseBoolean}}">
                 <VerticalStackLayout Margin="0,0,0,10">
                     <Label Text="Von"/>
@@ -43,7 +45,9 @@
                                 MinimumWidthRequest="100"/>
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-            <!--Type-->
+            <!--#endregion-->
+            
+            <!--#region Type-->
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label Text="Type"/>
                 <Picker x:Name="TypePicker"
@@ -55,6 +59,9 @@
                         HorizontalOptions="Start"
                         WidthRequest="220"/>
             </VerticalStackLayout>
+            <!--#endregion-->
+
+            <!--#region Titel-->
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label Text="Titel"/>
                 <Frame CornerRadius="10" 
@@ -84,6 +91,9 @@
                     </VerticalStackLayout>
                 </Frame>
             </VerticalStackLayout>
+            <!--#endregion-->
+
+            <!--#region Description-->
             <VerticalStackLayout Margin="0,20,0,0">
                 <Label Text="Beschreibung"/>
                 <Editor  x:Name="Description"
@@ -95,12 +105,16 @@
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>
             </VerticalStackLayout>
+            <!--#endregion-->
 
+            <!--#region WorkRelated-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
                 <Label Text="Arbeitsbedingt" VerticalOptions="Center"/>
             </HorizontalStackLayout>
+            <!--#endregion-->
 
+            <!--#region Image-->
             <VerticalStackLayout Margin="0,20,0,0"
                                  IsVisible="{Binding ShImage}">
                 <Label Text="Foto"/>
@@ -128,6 +142,7 @@
                     </VerticalStackLayout>
                 </Grid>
             </VerticalStackLayout >
+            <!--#endregion-->
 
             <Button Text="Speicher"
                     Margin="0,20,0,0"
