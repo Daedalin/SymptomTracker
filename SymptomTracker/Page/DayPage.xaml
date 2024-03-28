@@ -21,7 +21,7 @@
                      Grid.Row="1">
             <dg:DataGrid.Columns>
                 <dg:DataGridColumn Title="Name" PropertyName="Name" SortingEnabled="True"/>
-                <dg:DataGridColumn Title="Type" PropertyName="EventType" SortingEnabled="True"/>
+                <dg:DataGridColumn Title="Typ" PropertyName="EventType" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Beschreibung" PropertyName="Description" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Von" PropertyName="StartTime" SortingEnabled="True"/>
                 <dg:DataGridColumn Title="Bis" PropertyName="EndTime" SortingEnabled="True"/>
