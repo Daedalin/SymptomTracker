@@ -76,7 +76,7 @@
                                    Text="{Binding Title}"/>
                         <ListView x:Name="searchResults"
                                   ItemsSource="{Binding TitleSearchResults, Mode=TwoWay}"
-                                  HeightRequest="100"
+                                  HeightRequest="150"
                                   SelectedItem="{Binding SelectedTitle}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
