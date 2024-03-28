@@ -82,7 +82,8 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <Label Text="{Binding}"
-                                           TextColor="{AppThemeBinding Light=Black, Dark=White}">
+                                               TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                               VerticalTextAlignment="Center">
                                         </Label>
                                     </ViewCell>
                                 </DataTemplate>
