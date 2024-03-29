@@ -19,8 +19,8 @@ Oder ihr meldet euch bei Firebase App Distributionen an. Dort bekommt ihr eine E
 [Firebase Appdistribution](https://appdistribution.firebase.dev/i/f8d2ec0b8a6204a1 )
 
 ## Datenschutz 
-Die Daten wie auch die Bilder bei firebase hochgeladen. Das ist ein Google Dienst bei dem ich ein serve in Frankfurt ausgewählt hab. Alle Daten werden auf dem Handy mit dem Key in den Einstellungen verschlüsselt und natürlich.. auch entschlüsselt. 
-Der Key wird nur auf dem Handy gespeichert. Und sollte auch selbständig gesichert werden, da er auch beim Update neu eingetragen werden muss. 
+Die Daten wie auch die Bilder werden in Firebase in der Echtzeitdatenbank und im Filestore gespeichert. Firebase ist ein Google Dienst bei dem ich die Server in Frankfurt ausgewählt hab. Alle Daten werden auf dem Handy mit eime Key, der in den Einstellungen steht, verschlüsselt und natürlich auch entschlüsselt. 
+Der Key wird nur auf dem Handy gespeichert. Und sollte auch vom Nutzer selbst gesichert werden, da er auch beim Update neu eingetragen werden muss. Bei Verlust des Key können die Dante nich mehr abgerufen werden. 
 
 ### Transparenz
 Ich kann die login Email Adressen sehen und mit dieser auch sehen an welchen Tagen etwas eingetragen wurde. Anhand der Länge der verschlüsselten Daten kann man auch grob abschätzen wie viel eingetragen wurde. Genauso die Bilder werden mit dem Datum gespeichert aber auch diese sind natürlich verschlüsselt.
