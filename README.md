@@ -16,7 +16,7 @@ Man kann an Ereignissen Bilder hochladen welche auch später im report eigezeigt
 ## Wie bekomme ich die App
 Ihr könnt euch die APK aus den Release in github herunterladen. 
 Oder ihr meldet euch bei Firebase App Distributionen an. Dort bekommt ihr eine Email wenn eine neue Version veröffentlicht wird. Desweiteren könnt ihr auch ganz bequem die neue Version mit der "App Tester" App herunterladen und installier. 
-
+[appdistribution .firebase](https://appdistribution.firebase.dev/i/f8d2ec0b8a6204a1 )
 
 ## Datenschutz 
 Die Daten wie auch die Bilder bei firebase hochgeladen. Das ist ein Google Dienst bei dem ich ein serve in Frankfurt ausgewählt hab. Alle Daten werden auf dem Handy mit dem Key in den Einstellungen verschlüsselt und natürlich.. auch entschlüsselt. 
