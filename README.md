@@ -23,7 +23,7 @@ Die Daten wie auch die Bilder werden in Firebase in der Echtzeitdatenbank und im
 Der Key wird nur auf dem Handy gespeichert. Und sollte auch vom Nutzer selbst gesichert werden, da er auch beim Update neu eingetragen werden muss. Bei Verlust des Key können die Dante nich mehr abgerufen werden. 
 
 ### Transparenz
-Ich kann die login Email Adressen sehen und mit dieser auch sehen an welchen Tagen etwas eingetragen wurde. Anhand der Länge der verschlüsselten Daten kann man auch grob abschätzen wie viel eingetragen wurde. Genauso die Bilder werden mit dem Datum gespeichert aber auch diese sind natürlich verschlüsselt.
+Ich kann die login Email Adressen sehen und mit dieser auch sehen an welchen Tagen etwas eingetragen wurde. Anhand der Länge der verschlüsselten Daten kann man auch grob abschätzen wie viel eingetragen wurde. Genauso werden die Bilder mit dem Datum gespeichert aber auch diese sind natürlich verschlüsselt.
 (Bild) 
 
 
