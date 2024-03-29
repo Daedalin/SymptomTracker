@@ -18,4 +18,4 @@ Die Daten wie auch die Bilder werden bei firebase hochgeladen. Das ist ein Googl
 Der Key wird nur auf dem Handy gespeichert. Und sollte auch selbständig gesichert werden, da er auch beim Update neu eingetragen werden muss. 
 
 ### Transparenz
-Ich kann die login Email Adressen sehen und mit dieser auch sehen an welchen Tagen etwas eingetragen wurde. Anhand der Länge der verschlüsselten Daten kann man auch grob abschätzen wie viel eingetragen wurde. 
+Ich kann die login Email Adressen sehen und mit dieser auch sehen an welchen Tagen etwas eingetragen wurde. Anhand der Länge der verschlüsselten Daten kann man auch grob abschätzen wie viel eingetragen wurde. Genauso die Bilder werden mit dem Datum gespeichert aber auch diese sind natürlich verschlüsselt. 
