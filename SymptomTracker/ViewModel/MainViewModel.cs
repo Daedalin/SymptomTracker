@@ -15,11 +15,12 @@ namespace SymptomTracker.ViewModel
 
         public MainViewModel()
         {
+            GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
-            GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
             ViewTitle = "Symptom Tracker";
+
         }
 
         #region Command

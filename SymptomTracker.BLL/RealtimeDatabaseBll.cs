@@ -43,7 +43,7 @@ namespace SymptomTracker.BLL
 
                 var Days = await m_firebaseClient.Child(m_LoginBll.GetUid())
                                                  .Child("Dates")
-                                                 .OnceAsync<string>();              
+                                                 .OnceAsync<string>();
 
                 //Parallel
                 foreach (var Day in Days)
@@ -58,7 +58,7 @@ namespace SymptomTracker.BLL
 
                     if (Data.Events.Any(t => t.EventType == eventType))
                     {
-                        Data.Events.RemoveAll(t => t.EventType != eventType);                       
+                        Data.Events.RemoveAll(t => t.EventType != eventType);
                         Result.Add(Data);
                     }
                 }
@@ -70,7 +70,8 @@ namespace SymptomTracker.BLL
                 table.Border = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
                 table.DefaultCellBorder = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
 
-                foreach (var Day in Result.OrderBy(t => t.Date)){
+                foreach (var Day in Result.OrderBy(t => t.Date))
+                {
                     Row row = table.Rows.Add();
                     row.Cells.Add(Day.Date.ToShortDateString()).ColSpan = 4;
 
@@ -224,9 +225,10 @@ namespace SymptomTracker.BLL
                     return OperatingResult<Day>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
 
                 var Data = await m_firebaseClient.Child(LoginBll.GetUid())
-                                                   .Child("Dates")
-                                                   .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
-                                                   .OnceSingleAsync<string>();
+                                                 .Child("Dates")
+                                                 .Child(Date.ToString("yyyy-MM"))
+                                                 .Child(Date.ToString("dd"))
+                                                 .OnceSingleAsync<string>();
 
                 return await Cryptography.DecryptAndDeserializeMessage<Day>(Data);
             }
@@ -254,15 +256,27 @@ namespace SymptomTracker.BLL
                 if (DBVersion < DBUpdater.CurrentDBVersion)
                 {
                     if (DBVersion < 2)
-                        await DBUpdater.From1VTo2V(m_firebaseClient, LoginBll.GetUid());
+                    {
+                        var result = await DBUpdater.From1VTo2V(m_firebaseClient, LoginBll.GetUid());
+                        if (!result.Success)
+                            return result;
+                    }
+                    if (DBVersion < 3)
+                    {
+                        var result = await DBUpdater.From2VTo3V(m_firebaseClient, LoginBll.GetUid());
+                        if (!result.Success)
+                            return result;
+                    }
 
                     await m_firebaseClient.Child(LoginBll.GetUid())
                                           .Child("Settings")
                                           .Child("DB_Version")
                                           .PutAsync(DBUpdater.CurrentDBVersion);
 
+                    return OperatingResult.OK($"Datenbankupdate wurde erfolgreich durchgeführt.", eMessageType.Info);
                 }
-                return OperatingResult.OK($"Datenbankupdate wurde erfolgreich durchgeführt.", eMessageType.Info);
+
+                return OperatingResult.OK();
             }
             catch (Exception ex)
             {
@@ -284,7 +298,8 @@ namespace SymptomTracker.BLL
 
                 await m_firebaseClient.Child(LoginBll.GetUid())
                                       .Child("Dates")
-                                      .Child($"{day.Date.Year}-{day.Date.Month}-{day.Date.Day}")
+                                      .Child(day.Date.ToString("yyyy-MM"))
+                                      .Child(day.Date.ToString("dd"))
                                       .PutAsync<string>(Data);
 
                 return OperatingResult.OK();
