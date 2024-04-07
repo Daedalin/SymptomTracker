@@ -30,6 +30,82 @@ namespace SymptomTracker.BLL
             }
         }
 
+        #region GeneratingReports
+        public async Task<OperatingResult<List<Day>>> GeneratingReports(eEventType eventType)
+        {
+            try
+            {
+                List<Day> Result = new List<Day>();
+
+                var ClientRault = await CreateFirebaseClient();
+                if (!ClientRault.Success)
+                    return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
+
+                var Days = await m_firebaseClient.Child(m_LoginBll.GetUid())
+                                                 .Child("Dates")
+                                                 .OnceAsync<string>();              
+
+                //Parallel
+                foreach (var Day in Days)
+                {
+                    //Date filter with key
+
+                    var DecryptResult = await Cryptography.Decrypt(Day.Object);
+                    if (DecryptResult == null || !DecryptResult.Success)
+                        continue;
+
+                    var Data = JsonSerializer.Deserialize<Day>(DecryptResult.Result);
+
+                    if (Data.Events.Any(t => t.EventType == eventType))
+                    {
+                        Data.Events.RemoveAll(t => t.EventType != eventType);                       
+                        Result.Add(Data);
+                    }
+                }
+
+                //Mehere Seiten?
+                Document document = new Document();
+                Aspose.Pdf.Page page = document.Pages.Add();
+                Table table = new Table();
+                table.Border = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
+                table.DefaultCellBorder = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
+
+                foreach (var Day in Result.OrderBy(t => t.Date)){
+                    Row row = table.Rows.Add();
+                    row.Cells.Add(Day.Date.ToShortDateString()).ColSpan = 4;
+
+
+                    foreach (var Event in Day.Events)
+                    {
+                        row = table.Rows.Add();
+                        row.Cells.Add(Event.Name);
+                        row.Cells.Add(Event.Description); // Es gibt warp
+                        if (Event.FullTime)
+                            row.Cells.Add("Ganztägig").ColSpan = 2;
+                        else
+                        {
+                            row.Cells.Add(Event.StartTime.ToString());
+                            row.Cells.Add(Event.EndTime.ToString());
+                        }
+                    }
+                    row = table.Rows.Add();
+                    row.Cells.Add().ColSpan = 4;
+                }
+
+                page.Paragraphs.Add(table);
+
+
+                document.Save("C:\\Temp\\Generated-PDFV2.pdf");
+
+                return OperatingResult<List<Day>>.OK(Result);
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult<List<Day>>.Fail(ex);
+            }
+        }
+        #endregion
+
         #region IsKeyOK
         public async Task<OperatingResult<bool>> IsKeyOK()
         {
@@ -160,80 +236,6 @@ namespace SymptomTracker.BLL
             }
         }
         #endregion
-
-        public async Task<OperatingResult<List<Day>>> GeneratingReports(eEventType eventType)
-        {
-            try
-            {
-                List<Day> Result = new List<Day>();
-
-                var ClientRault = await CreateFirebaseClient();
-                if (!ClientRault.Success)
-                    return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
-
-                var Days = await m_firebaseClient.Child(m_LoginBll.GetUid())
-                                                 .Child("Dates")
-                                                 .OnceAsync<string>();              
-
-                //Parallel
-                foreach (var Day in Days)
-                {
-                    //Date filter with key
-
-                    var DecryptResult = await Cryptography.Decrypt(Day.Object);
-                    if (DecryptResult == null || !DecryptResult.Success)
-                        continue;
-
-                    var Data = JsonSerializer.Deserialize<Day>(DecryptResult.Result);
-
-                    if (Data.Events.Any(t => t.EventType == eventType))
-                    {
-                        Data.Events.RemoveAll(t => t.EventType != eventType);                       
-                        Result.Add(Data);
-                    }
-                }
-
-                //Mehere Seiten?
-                Document document = new Document();
-                Aspose.Pdf.Page page = document.Pages.Add();
-                Table table = new Table();
-                table.Border = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
-                table.DefaultCellBorder = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
-
-                foreach (var Day in Result.OrderBy(t => t.Date)){
-                    Row row = table.Rows.Add();
-                    row.Cells.Add(Day.Date.ToShortDateString()).ColSpan = 4;
-
-
-                    foreach (var Event in Day.Events)
-                    {
-                        row = table.Rows.Add();
-                        row.Cells.Add(Event.Name);
-                        row.Cells.Add(Event.Description); // Es gibt warp
-                        if (Event.FullTime)
-                            row.Cells.Add("Ganztägig").ColSpan = 2;
-                        else
-                        {
-                            row.Cells.Add(Event.StartTime.ToString());
-                            row.Cells.Add(Event.EndTime.ToString());
-                        }
-                    }
-                    row = table.Rows.Add();
-                    row.Cells.Add().ColSpan = 4;
-                }
-
-                page.Paragraphs.Add(table);
-
-
-                document.Save("C:\\Temp\\Generated-PDFV2.pdf");
-
-                return OperatingResult<List<Day>>.OK(Result);
-            }
-            catch (Exception ex)
-            {
-                return OperatingResult<List<Day>>.Fail(ex);
-            }
-        }
 
         #region UpdateDB
         public async Task<OperatingResult> UpdateDB()
