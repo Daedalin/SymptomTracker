@@ -31,7 +31,7 @@ namespace SymptomTracker.BLL
         }
 
         #region GeneratingReports
-        public async Task<OperatingResult<List<Day>>> GeneratingReports(eEventType eventType)
+        public async Task<OperatingResult<List<Day>>> GeneratingReports(eEventType eventType, DateOnly StartDay, DateOnly EndDay)
         {
             try
             {
@@ -41,8 +41,15 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
 
+                for (DateOnly current = StartDay.AddDays(StartDay.Day * -1); current > EndDay.AddDays(StartDay.Day * -1); current.AddMonths(1))
+                {
+                    //Testen
+                }             
+
+
                 var Days = await m_firebaseClient.Child(m_LoginBll.GetUid())
                                                  .Child("Dates")
+                                                 .Child(StartDay.ToString("yyyy-MM"))
                                                  .OnceAsync<string>();
 
                 //Parallel
