@@ -69,6 +69,7 @@
 	  <ApplicationTitle>Symptom-Tracker</ApplicationTitle>
 	  <ApplicationDisplayVersion>1.1.3</ApplicationDisplayVersion>
 	  <ApplicationVersion>010103</ApplicationVersion>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
