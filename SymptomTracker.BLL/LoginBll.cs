@@ -23,8 +23,15 @@ namespace SymptomTracker.BLL
         public bool HasLogin { get => m_firebaseAuthClient?.User != null; }
         #endregion
 
-        public string GetToken() => m_firebaseAuthClient?.User?.Credential?.RefreshToken; 
-        public string GetUid() => Debugger.IsAttached ? "Debug" : m_firebaseAuthClient?.User?.Uid; 
+        public string GetToken() => m_firebaseAuthClient?.User?.Credential?.RefreshToken;
+        public string GetUid()
+        {
+#if RELEASE
+            return m_firebaseAuthClient?.User?.Uid;
+#else
+            return "Debug";
+#endif
+        }
 
         #region All About Login
         #region CreateUser
