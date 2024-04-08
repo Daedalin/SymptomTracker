@@ -41,19 +41,34 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
 
-                for (DateOnly current = StartDay.AddDays(StartDay.Day * -1); current > EndDay.AddDays(StartDay.Day * -1); current.AddMonths(1))
+               var Year = StartDay.Year;
+                List<FirebaseObject<string>> AllDays = new List<FirebaseObject<string>>();
+                for (int Month = StartDay.Month; Month != EndDay.Month + 1; Month++)
                 {
-                    //Testen
-                }             
-
-
-                var Days = await m_firebaseClient.Child(m_LoginBll.GetUid())
+                    var DaysResult = await m_firebaseClient.Child(m_LoginBll.GetUid())
                                                  .Child("Dates")
                                                  .Child(StartDay.ToString("yyyy-MM"))
                                                  .OnceAsync<string>();
 
+                    List<FirebaseObject<string>> Days = DaysResult.ToList();
+
+                    if (Month == StartDay.Month)
+                        Days.RemoveAll(t => int.Parse(t.Key) < StartDay.Day);
+                    else if(Month == EndDay.Month)
+                        Days.RemoveAll(t => int.Parse(t.Key) > EndDay.Day);
+
+                    AllDays.AddRange(Days);
+
+                    if (Month == 12)
+                    {
+                        Month = 0;
+                        Year++;
+                    }
+                }
+                                                
+
                 //Parallel
-                foreach (var Day in Days)
+                foreach (var Day in AllDays)
                 {
                     //Date filter with key
 
@@ -103,7 +118,7 @@ namespace SymptomTracker.BLL
                 page.Paragraphs.Add(table);
 
 
-                document.Save("C:\\Temp\\Generated-PDFV2.pdf");
+                document.Save($"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
 
                 return OperatingResult<List<Day>>.OK(Result);
             }

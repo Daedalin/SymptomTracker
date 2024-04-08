@@ -66,7 +66,7 @@ namespace SymptomTracker.ViewModel
         public async void OnGeneratingReportsClick()
         {
             //Button disabel
-            await RealtimeDatabaseBll.GeneratingReports(eEventType.Symptom);
+            await RealtimeDatabaseBll.GeneratingReports(eEventType.Symptom, new DateOnly(2024, 03, 15), new DateOnly(2024, 04, 10));
         }
 
 
