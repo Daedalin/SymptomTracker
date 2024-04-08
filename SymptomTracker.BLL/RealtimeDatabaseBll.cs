@@ -47,7 +47,7 @@ namespace SymptomTracker.BLL
                 {
                     var DaysResult = await m_firebaseClient.Child(m_LoginBll.GetUid())
                                                  .Child("Dates")
-                                                 .Child(StartDay.ToString("yyyy-MM"))
+                                                 .Child($"{Year}-{Month.ToString("D2")}")
                                                  .OnceAsync<string>();
 
                     List<FirebaseObject<string>> Days = DaysResult.ToList();
