@@ -1,6 +1,7 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using SymptomTracker.Page;
 using SymptomTracker.Utils.Entities;
+using SymptomTracker.BLL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,6 @@ namespace SymptomTracker.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
-
         public MainViewModel()
         {
             GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
@@ -66,9 +66,10 @@ namespace SymptomTracker.ViewModel
         public async void OnGeneratingReportsClick()
         {
             //Button disabel
-            await RealtimeDatabaseBll.GeneratingReports(eEventType.Food, new DateOnly(2024, 03, 15), new DateOnly(2024, 04, 10));
+            var Data = await RealtimeDatabaseBll.GetDateForReport(eEventType.Food, new DateOnly(2024, 03, 15), new DateOnly(2024, 04, 10));
+            Validate(Data);
+
+            PDF_Bll.GeneratingReports(Data.Result);
         }
-
-
     }
 }

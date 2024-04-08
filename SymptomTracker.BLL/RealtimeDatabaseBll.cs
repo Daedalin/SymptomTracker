@@ -4,11 +4,8 @@ using Daedalin.Core.OperationResult;
 using SymptomTracker.Utils.Entities;
 using Firebase.Database.Query;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.VisualBasic;
 using Daedalin.Core.Enum;
-using Org.BouncyCastle.Utilities;
-using Aspose.Pdf;
+using System.Collections.Concurrent;
 
 namespace SymptomTracker.BLL
 {
@@ -30,18 +27,16 @@ namespace SymptomTracker.BLL
             }
         }
 
-        #region GeneratingReports
-        public async Task<OperatingResult<List<Day>>> GeneratingReports(eEventType eventType, DateOnly StartDay, DateOnly EndDay)
+        #region GetDateForReport
+        public async Task<OperatingResult<List<Day>>> GetDateForReport(eEventType eventType, DateOnly StartDay, DateOnly EndDay)
         {
             try
             {
-                List<Day> Result = new List<Day>();
-
                 var ClientRault = await CreateFirebaseClient();
                 if (!ClientRault.Success)
                     return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
 
-               var Year = StartDay.Year;
+                var Year = StartDay.Year;
                 List<FirebaseObject<string>> AllDays = new List<FirebaseObject<string>>();
                 for (int Month = StartDay.Month; Month != EndDay.Month + 1; Month++)
                 {
@@ -54,7 +49,7 @@ namespace SymptomTracker.BLL
 
                     if (Month == StartDay.Month)
                         Days.RemoveAll(t => int.Parse(t.Key) < StartDay.Day);
-                    else if(Month == EndDay.Month)
+                    else if (Month == EndDay.Month)
                         Days.RemoveAll(t => int.Parse(t.Key) > EndDay.Day);
 
                     AllDays.AddRange(Days);
@@ -65,8 +60,8 @@ namespace SymptomTracker.BLL
                         Year++;
                     }
                 }
-                                                
 
+                List<Day> Result = new List<Day>();
                 //Parallel
                 foreach (var Day in AllDays)
                 {
@@ -83,43 +78,7 @@ namespace SymptomTracker.BLL
                         Data.Events.RemoveAll(t => t.EventType != eventType);
                         Result.Add(Data);
                     }
-                }
-
-                //Mehere Seiten?
-                Document document = new Document();
-                Aspose.Pdf.Page page = document.Pages.Add();
-                Table table = new Table();
-                table.Border = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
-                table.DefaultCellBorder = new BorderInfo(BorderSide.All, .5f, Aspose.Pdf.Color.FromRgb(System.Drawing.Color.LightGray));
-
-                foreach (var Day in Result.OrderBy(t => t.Date))
-                {
-                    Row row = table.Rows.Add();
-                    row.Cells.Add(Day.Date.ToShortDateString()).ColSpan = 4;
-
-
-                    foreach (var Event in Day.Events)
-                    {
-                        row = table.Rows.Add();
-                        row.Cells.Add(Event.Name);
-                        row.Cells.Add(Event.Description); // Es gibt warp
-                        if (Event.FullTime)
-                            row.Cells.Add("Ganztägig").ColSpan = 2;
-                        else
-                        {
-                            row.Cells.Add(Event.StartTime.ToString());
-                            row.Cells.Add(Event.EndTime.ToString());
-                        }
-                    }
-                    row = table.Rows.Add();
-                    row.Cells.Add().ColSpan = 4;
-                }
-
-                page.Paragraphs.Add(table);
-
-
-                document.Save($"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
-
+                };
                 return OperatingResult<List<Day>>.OK(Result);
             }
             catch (Exception ex)
@@ -127,7 +86,7 @@ namespace SymptomTracker.BLL
                 return OperatingResult<List<Day>>.Fail(ex);
             }
         }
-        #endregion
+        #endregion   
 
         #region IsKeyOK
         public async Task<OperatingResult<bool>> IsKeyOK()
