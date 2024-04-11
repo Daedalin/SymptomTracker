@@ -1,4 +1,5 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
+using SymptomTracker.Page;
 using SymptomTracker.Utils.Entities;
 using System;
 using System.Collections.Generic;
@@ -150,6 +151,7 @@ namespace SymptomTracker.ViewModel
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
             SettingsUpdate += __OnUpdateSettings;
+            Shell.Current.Navigating += __Navigating;
 
             SaveClick = new RelayCommand(__OnSaveClick);
             TakePhotoClick = new RelayCommand(__TakePhoto);
@@ -159,11 +161,31 @@ namespace SymptomTracker.ViewModel
 
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
-            m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result.OrderBy(t=>t).ToList();
+            m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result.OrderBy(t => t).ToList();
             __OnPerformSearch();
 
             OnPropertyChanged(nameof(HasImage));
             OnPropertyChanged(nameof(IsWindows));
+        }
+        #endregion
+
+        #region __Navigating
+        private async void __Navigating(object sender, ShellNavigatingEventArgs e)
+        {
+            if ((e.Source == ShellNavigationSource.Pop || e.Source == ShellNavigationSource.PopToRoot)
+                && e.Current.Location.OriginalString.Contains(nameof(CreateEventPage)))
+            {
+                if (string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(Description))
+                    return;
+
+                e.Cancel();
+
+                if (await Shell.Current.DisplayAlert("Achtung", "Nicht gespeicherte Änderungen.\nMöchten sie wirklich schließen?", "Ja", "Nein"))
+                {
+                    Title = null; Description = null;
+                    await Shell.Current.Navigation.PopAsync();
+                }
+            }
         }
         #endregion
 
