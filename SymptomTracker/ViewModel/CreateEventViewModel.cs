@@ -14,6 +14,7 @@ namespace SymptomTracker.ViewModel
     internal class CreateEventViewModel : ViewModelBase
     {
         private int m_Id;
+        private bool m_SkipClosingCheck;
         private eEventType m_EventType;
         private List<string> m_Titles;
 
@@ -175,14 +176,14 @@ namespace SymptomTracker.ViewModel
             if ((e.Source == ShellNavigationSource.Pop || e.Source == ShellNavigationSource.PopToRoot)
                 && e.Current.Location.OriginalString.Contains(nameof(CreateEventPage)))
             {
-                if (string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(Description))
+                if ((string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(Description)) || m_SkipClosingCheck)
                     return;
 
                 e.Cancel();
 
                 if (await Shell.Current.DisplayAlert("Achtung", "Nicht gespeicherte Änderungen.\nMöchten sie wirklich schließen?", "Ja", "Nein"))
                 {
-                    Title = null; Description = null;
+                    m_SkipClosingCheck = true;
                     await Shell.Current.Navigation.PopAsync();
                 }
             }
@@ -244,7 +245,7 @@ namespace SymptomTracker.ViewModel
                     var AddTitlesResult = await RealtimeDatabaseBll.AddLastTitles(m_EventType, Title);
                     Validate(AddTitlesResult);
                 }
-
+                m_SkipClosingCheck = true;
                 await Shell.Current.Navigation.PopAsync();
             }
         }
