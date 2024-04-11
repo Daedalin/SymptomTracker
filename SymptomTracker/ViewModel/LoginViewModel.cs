@@ -12,7 +12,22 @@ namespace SymptomTracker
 {
     internal class LoginViewModel : ViewModelBase
     {
-        public LoginViewModel() : this(false) { }
+        public LoginViewModel() : this(false)
+        {
+            Shell.Current.Navigating += __Navigating;
+        }
+
+        private void __Navigating(object sender, ShellNavigatingEventArgs e)
+        {
+            if ((e.Source == ShellNavigationSource.Pop || e.Source == ShellNavigationSource.PopToRoot)
+                && e.Current.Location.OriginalString.Contains(nameof(LoginPage)))
+            {
+                if (!LoginBll.HasLogin)
+                {
+                    e.Cancel();
+                }
+            }
+        }
 
         public LoginViewModel(bool _IsSignUp)
         {
