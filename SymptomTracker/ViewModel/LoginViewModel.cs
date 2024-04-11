@@ -51,6 +51,11 @@ namespace SymptomTracker
             get => GetProperty<bool>();
             set => SetProperty(value);
         }
+        public bool IsBusy
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
         #endregion
 
         #region Commands
@@ -69,6 +74,7 @@ namespace SymptomTracker
         #region OnLoginClick
         private async void OnLoginClick()
         {
+            IsBusy = true;
             OperatingResult<bool> Result;
             if (IsSignUp)
                 Result = await LoginBll.CreateUser(Email, Password, DisplayName);
@@ -88,6 +94,7 @@ namespace SymptomTracker
                 else
                     await Shell.Current.Navigation.PopAsync();
             }
+            IsBusy = false;
         }
         #endregion
 

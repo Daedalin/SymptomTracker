@@ -15,6 +15,7 @@ namespace SymptomTracker.BLL
     public class LoginBll
     {
         #region Needs
+        private bool m_IsDebugUser;
         private FirebaseAuthClient m_firebaseAuthClient;
         #endregion
 
@@ -29,7 +30,7 @@ namespace SymptomTracker.BLL
 #if RELEASE
             return m_firebaseAuthClient?.User?.Uid;
 #else
-            return "Debug";
+            return m_IsDebugUser ? "Debug" : m_firebaseAuthClient?.User?.Uid;
 #endif
         }
 
@@ -88,6 +89,15 @@ namespace SymptomTracker.BLL
                 await SecureStorage.Default.SetAsync("EMail", EMail);
                 await SecureStorage.Default.SetAsync("Password", Password);
 
+#if RELEASE
+#else
+                if (EMail == "t@t.de")
+                {
+                    m_IsDebugUser = true;
+                    await SecureStorage.Default.SetAsync("EncryptPassword", "00000000000000000000000000000000");
+                }
+#endif
+
                 return OperatingResult<bool>.OK(true);
             }
             catch (FirebaseAuthException)
@@ -121,6 +131,7 @@ namespace SymptomTracker.BLL
 
                 SecureStorage.Default.Remove("EMail");
                 SecureStorage.Default.Remove("Password");
+                SecureStorage.Default.Remove("EncryptPassword");
 
                 m_firebaseAuthClient.SignOut();
                 PlsLogin?.Invoke();
