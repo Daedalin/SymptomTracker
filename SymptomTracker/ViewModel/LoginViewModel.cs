@@ -12,7 +12,22 @@ namespace SymptomTracker
 {
     internal class LoginViewModel : ViewModelBase
     {
-        public LoginViewModel() : this(false) { }
+        public LoginViewModel() : this(false)
+        {
+            Shell.Current.Navigating += __Navigating;
+        }
+
+        private void __Navigating(object sender, ShellNavigatingEventArgs e)
+        {
+            if ((e.Source == ShellNavigationSource.Pop || e.Source == ShellNavigationSource.PopToRoot)
+                && e.Current.Location.OriginalString.Contains(nameof(LoginPage)))
+            {
+                if (!LoginBll.HasLogin)
+                {
+                    e.Cancel();
+                }
+            }
+        }
 
         public LoginViewModel(bool _IsSignUp)
         {
@@ -51,6 +66,11 @@ namespace SymptomTracker
             get => GetProperty<bool>();
             set => SetProperty(value);
         }
+        public bool IsBusy
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
         #endregion
 
         #region Commands
@@ -69,6 +89,7 @@ namespace SymptomTracker
         #region OnLoginClick
         private async void OnLoginClick()
         {
+            IsBusy = true;
             OperatingResult<bool> Result;
             if (IsSignUp)
                 Result = await LoginBll.CreateUser(Email, Password, DisplayName);
@@ -88,6 +109,7 @@ namespace SymptomTracker
                 else
                     await Shell.Current.Navigation.PopAsync();
             }
+            IsBusy = false;
         }
         #endregion
 

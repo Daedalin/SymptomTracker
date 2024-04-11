@@ -1,10 +1,8 @@
 ❗Bitte denkt dran euern Key vor dem update zu sichern.❗
 
-Version 1.1.3
+Version 1.2.0
 Bugfixes:
-Events konnen Problemlos Bearbeitet werden ohne das die Bescheibung verloren geht.
-Bilder können nun auf Android wieder angezeigt werden.
-UI wünsche, wurden umgesetzt.
+Login während der lade Zeit deaktivieren 
 
 Futures:
-Nun können Premium Nutzer Bilder bei Events hochladen. 
+Nun wird man benachritigt, wenn man ein noch nicht gespeichertes Event verlassen möchte.
