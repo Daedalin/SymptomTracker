@@ -3,11 +3,12 @@
     x:Class="SymptomTracker.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SymptomTracker"
+    xmlns:local="clr-namespace:SymptomTracker"            
+    xmlns:Pages="clr-namespace:SymptomTracker.Page"    
     Shell.FlyoutBehavior="Disabled">
 
     <ShellContent
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate Pages:MainMenu}"
         Route="MainPage" />
 
 </Shell>

@@ -1,4 +1,5 @@
-﻿using SymptomTracker.ViewModel;
+﻿using SymptomTracker.Page;
+using SymptomTracker.ViewModel;
 
 namespace SymptomTracker
 {
@@ -8,7 +9,7 @@ namespace SymptomTracker
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+            MainPage = new MainMenu();
 
         }
     }

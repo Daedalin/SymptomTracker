@@ -32,10 +32,10 @@ namespace SymptomTracker.ViewModel
         {
             if (para != null && para is string strPara && Int32.TryParse(strPara, out int intPara))
             {
-                await Shell.Current.Navigation.PushAsync(new CreateEventPage()
+                App.Current.MainPage = new CreateEventPage()
                 {
                     BindingContext = new CreateEventViewModel((eEventType)intPara)
-                });
+                };
             }
         }
         #endregion
@@ -43,20 +43,20 @@ namespace SymptomTracker.ViewModel
         #region OnShowDayClick
         public async void OnShowDayClick()
         {
-            await Shell.Current.Navigation.PushAsync(new DayPage()
+            App.Current.MainPage = new DayPage()
             {
                 BindingContext = new DayViewModel()
-            });
+            };
         }
         #endregion
 
         #region OnShowDayClick
         public async void OnShowSettingsClick()
         {
-            await Shell.Current.Navigation.PushAsync(new SettingPage()
+            App.Current.MainPage = new SettingPage()
             {
                 BindingContext = new SettingsViewModel()
-            });
+            };
         }
         #endregion
 

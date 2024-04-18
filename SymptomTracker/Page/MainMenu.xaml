@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:Pages="clr-namespace:SymptomTracker.Page"
+            x:Class="SymptomTracker.Page.MainMenu">
+
+    <Pages:MainPage Title="Menu"/>
+    <Pages:SettingPage Title="Einstellungen"/>
+
+</TabbedPage>

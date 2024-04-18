@@ -152,7 +152,7 @@ namespace SymptomTracker.ViewModel
             ViewTitle = "Ereignis erstellen";
             TitleSearchResults = new List<string>();
             SettingsUpdate += __OnUpdateSettings;
-            Shell.Current.Navigating += __Navigating;
+            //Shell.Current.Navigating += __Navigating;
 
             SaveClick = new RelayCommand(__OnSaveClick);
             TakePhotoClick = new RelayCommand(__TakePhoto);

@@ -127,10 +127,10 @@ namespace SymptomTracker
 
         private void PlsLogin()
         {
-            Shell.Current.Navigation.PushAsync(new LoginPage()
+            App.Current.MainPage = new LoginPage()
             {
                 BindingContext = new LoginViewModel()
-            });
+            };
         }
     }
 }
