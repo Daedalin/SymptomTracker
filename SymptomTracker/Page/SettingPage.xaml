@@ -36,6 +36,11 @@
                     Margin="0,10,0,0"
                     Command="{Binding UpdateDBClick}"
                     CommandParameter="1"/>
+
+            <Button Text="Benachrichtigungs Test" 
+                    Margin="0,10,0,0"
+                    Command="{Binding ReminderClick}"
+                    CommandParameter="1"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
