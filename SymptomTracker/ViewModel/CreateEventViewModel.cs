@@ -24,10 +24,13 @@ namespace SymptomTracker.ViewModel
             Date = date;
             m_Id = existingEvent.ID;
             Title = existingEvent.Name;
+            Where = existingEvent.Where;
             FullTime = existingEvent.FullTime;
+            Quantity = existingEvent.Quantity;
             m_EventType = existingEvent.EventType;
             Description = existingEvent.Description;
             EndTime = existingEvent.EndTime ?? TimeSpan.Zero;
+            PreparationMethod = existingEvent.PreparationMethod;
             StartTime = existingEvent.StartTime ?? TimeSpan.Zero;
             if (IsWorkRelated)
                 WorkRelated = (existingEvent as WorkRelatedEvent)?.WorkRelated ?? false;
@@ -83,6 +86,7 @@ namespace SymptomTracker.ViewModel
             {
                 m_EventType = value.Key;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsFood));
                 OnPropertyChanged(nameof(IsWorkRelated));
             }
         }
@@ -106,6 +110,22 @@ namespace SymptomTracker.ViewModel
             get => GetProperty<string>();
             set => SetProperty(value);
         }
+        public string Quantity
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+        public string PreparationMethod
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+        public string Where
+        {
+            get => GetProperty<string>();
+            set => SetProperty(value);
+        }
+
         public List<string> TitleSearchResults
         {
             get => GetProperty<List<string>>();
@@ -135,6 +155,8 @@ namespace SymptomTracker.ViewModel
         public bool ShImage => Settings?.Rights.HasFlag(eRights.Foto) ?? false;
 
         public bool IsWorkRelated => m_EventType == eEventType.Stress || m_EventType == eEventType.Mood;
+
+        public bool IsFood => m_EventType == eEventType.Food;
 
         #region Command
         public RelayCommand PerformSearch { get; set; }
@@ -229,6 +251,9 @@ namespace SymptomTracker.ViewModel
             currentEvent.EndTime = !FullTime ? EndTime : null;
             currentEvent.StartTime = !FullTime ? StartTime : null;
             currentEvent.HasImage = !string.IsNullOrEmpty(ImagePath);
+            currentEvent.Where = Where;
+            currentEvent.Quantity = Quantity;
+            currentEvent.PreparationMethod = PreparationMethod;
 
             if (!string.IsNullOrEmpty(ImagePath))
             {
@@ -246,6 +271,8 @@ namespace SymptomTracker.ViewModel
                     Validate(AddTitlesResult);
                 }
                 m_SkipClosingCheck = true;
+                if (m_EventType == eEventType.Symptom)
+                    await Shell.Current.DisplayAlert("Du hast ein Symtom gespeichert", "Denk drann ob du das letzte essen genauer bescheiben musst.", "Ok");
                 await Shell.Current.Navigation.PopAsync();
             }
         }

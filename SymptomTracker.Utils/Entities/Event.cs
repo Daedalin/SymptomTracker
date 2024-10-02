@@ -17,6 +17,9 @@ namespace SymptomTracker.Utils.Entities
         public eEventType EventType { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Where { get; set; }
+        public string Quantity { get; set; }
+        public string PreparationMethod { get; set; }
         public bool FullTime { get; set; }
         public bool HasImage { get; set; }
     }

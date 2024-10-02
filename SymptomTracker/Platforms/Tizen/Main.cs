@@ -6,7 +6,7 @@ namespace SymptomTracker
 {
     internal class Program : MauiApplication
     {
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp().Build();
 
         static void Main(string[] args)
         {

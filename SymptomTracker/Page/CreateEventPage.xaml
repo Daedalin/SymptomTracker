@@ -27,7 +27,7 @@
                 </VerticalStackLayout>
             </HorizontalStackLayout>
             <!--#endregion-->
-            
+
             <!--#region Time-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding FullTime,Converter={StaticResource InverseBoolean}}">
                 <VerticalStackLayout Margin="0,0,0,10">
@@ -46,11 +46,10 @@
                 </VerticalStackLayout>
             </HorizontalStackLayout>
             <!--#endregion-->
-            
+
             <!--#region Type-->
-            <VerticalStackLayout Margin="0,20,0,0">
-                <Label Text="Typ"/>
-                <Picker x:Name="TypePicker"
+            <Label Text="Typ"/>
+            <Picker x:Name="TypePicker"
                         Margin="0,10,0,0"
                         FontSize="18"
                         ItemsSource="{Binding Typs}"
@@ -58,47 +57,43 @@
                         SelectedItem="{Binding SelectedType}"
                         HorizontalOptions="Start"
                         WidthRequest="220"/>
-            </VerticalStackLayout>
             <!--#endregion-->
 
             <!--#region Titel-->
-            <VerticalStackLayout Margin="0,20,0,0">
-                <Label Text="Titel"/>
-                <Frame CornerRadius="10" 
+            <Label Text="Titel"/>
+            <Frame CornerRadius="10" 
                        Padding="3" 
                        Margin="0,10,0,0"
                        HorizontalOptions="Start"
                        MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                        WidthRequest="{Binding Width, Source={x:Reference List}}">
-                    <VerticalStackLayout>
-                        <SearchBar x:Name="searchBar"
+                <VerticalStackLayout>
+                    <SearchBar x:Name="searchBar"
                                    SearchCommand="{Binding PerformSearch}"
                                    Text="{Binding Title}"/>
-                        <ListView x:Name="searchResults"
+                    <ListView x:Name="searchResults"
                                   ItemsSource="{Binding TitleSearchResults, Mode=TwoWay}"
                                   HeightRequest="150"
                                   Margin="10,10,10,0"
                                   SelectedItem="{Binding SelectedTitle}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <ViewCell>
-                                        <Label Text="{Binding}"
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Label Text="{Binding}"
                                                TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                                VerticalTextAlignment="Center">
-                                        </Label>
-                                    </ViewCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </VerticalStackLayout>
-                </Frame>
-            </VerticalStackLayout>
+                                    </Label>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Frame>
             <!--#endregion-->
 
-            <!--#region Description-->
-            <VerticalStackLayout Margin="0,20,0,0">
-                <Label Text="Beschreibung"/>
-                <Editor  x:Name="Description"
+            <!--#region Deteils-->
+            <Label Text="Beschreibung"/>
+            <Editor  x:Name="Description"
                          Text="{Binding Description,Mode=TwoWay}"
                          Margin="0,10,0,0"
                          MaximumHeightRequest="315"
@@ -106,10 +101,37 @@
                          Placeholder="Beschreibung"
                          MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                          FontSize="18"/>
-            </VerticalStackLayout>
-            <!--#endregion-->
+            <Label Text="Ort:"/>
+            <Picker x:Name="Ort"
+                    SelectedItem="{Binding Where}"
+                    Margin="0,10,0,0"
+                    MinimumWidthRequest="300"
+                    MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                    FontSize="18">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Zu Hause</x:String>
+                        <x:String>Auswärts</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+            <Label Text="Stärke / Menge"/>
+            <Editor  x:Name="Quantity"
+                     Text="{Binding Quantity,Mode=TwoWay}"
+                     Margin="0,10,0,0"
+                     Placeholder="Stärke / Menge - (grob)"
+                     MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                     FontSize="18"/>
+            <Label Text="Zubereitungsart"
+                   IsVisible="{Binding IsFood}"/>
+            <Editor  x:Name="PreparationMethod"
+                     IsVisible="{Binding IsFood}"
+                     Text="{Binding PreparationMethod,Mode=TwoWay}"
+                     Margin="0,10,0,0"
+                     Placeholder="Zubereitungsart (Roh, gekocht, etc.)"
+                     MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
+                     FontSize="18"/>
 
-            <!--#region WorkRelated-->
             <HorizontalStackLayout Margin="0,20,0,0" IsVisible="{Binding IsWorkRelated}">
                 <CheckBox IsChecked="{Binding WorkRelated}" VerticalOptions="Center"/>
                 <Label Text="Arbeitsbedingt" VerticalOptions="Center"/>
@@ -124,7 +146,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="65"/>
                         <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>                    
+                    </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,10,0,10">
                         <Grid.ColumnDefinitions>
