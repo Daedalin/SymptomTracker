@@ -1,5 +1,8 @@
 ﻿using Android.App;
 using Android.Runtime;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
+using SymptomTracker.Utils.Entities;
 
 namespace SymptomTracker
 {
@@ -11,6 +14,17 @@ namespace SymptomTracker
         {
         }
 
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        protected override MauiApp CreateMauiApp()
+        {
+            var builder = MauiProgram.CreateMauiApp();
+            builder.UseLocalNotification( conf =>
+            {
+                conf.AddAndroid(android =>
+                {
+                    android.AddReminderChannel();
+                });
+            });
+            return builder.Build();
+        }
     }
 }

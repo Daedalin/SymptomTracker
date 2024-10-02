@@ -7,18 +7,11 @@ namespace SymptomTracker
 {
     public static class MauiProgram
     {
-        public static MauiApp CreateMauiApp()
+        public static MauiAppBuilder CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiApp<App>()
-                .UseLocalNotification(conf =>
-                {
-                    conf.AddAndroid(android =>
-                    {
-                        android.AddReminderChannel();
-                    });
-                })
+                .UseMauiApp<App>()                
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,16 +22,15 @@ namespace SymptomTracker
             builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            return builder;
         }
-
-        private static void AddReminderChannel(this IAndroidLocalNotificationBuilder android)
+        public static void AddReminderChannel(this IAndroidLocalNotificationBuilder android)
         {
             foreach (var Event in Enums.EventType)
             {
                 if (Event.Key == eEventType.NotSet)
                     continue;
-                
+
                 android.AddChannel(new NotificationChannelRequest
                 {
                     Id = $"Reminder_{Event.Key}",
