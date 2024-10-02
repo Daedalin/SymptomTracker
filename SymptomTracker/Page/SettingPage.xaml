@@ -37,9 +37,33 @@
                     Command="{Binding UpdateDBClick}"
                     CommandParameter="1"/>
 
-            <Button Text="Benachrichtigungs Test" 
+            <Grid ColumnDefinitions="*,*">
+                <VerticalStackLayout>
+                    <Label Text="Typ"/>
+                    <Picker x:Name="TypePicker"
+                        Margin="0,10,0,0"
+                        FontSize="18"
+                        WidthRequest="100"
+                        ItemsSource="{Binding Typs}"
+                        ItemDisplayBinding="{Binding Value}"
+                        SelectedItem="{Binding SelectedType}"
+                        HorizontalOptions="Start"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="Um: "/>
+                    <TimePicker Time="{Binding StartTime}"
+                                FontSize="18"
+                                Margin="0,10,0,0"
+                                MinimumWidthRequest="100"/>
+                </VerticalStackLayout>
+            </Grid>
+            <Button Text="Benachrichtigung hinugüfen" 
                     Margin="0,10,0,0"
                     Command="{Binding ReminderClick}"
+                    CommandParameter="1"/>
+            <Button Text="Benachrichtigung alle löschen" 
+                    Margin="0,10,0,0"
+                    Command="{Binding ReminderClearClick}"
                     CommandParameter="1"/>
         </VerticalStackLayout>
     </Grid>

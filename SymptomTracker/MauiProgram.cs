@@ -34,8 +34,6 @@ namespace SymptomTracker
 
         private static void AddReminderChannel(this IAndroidLocalNotificationBuilder android)
         {
-            //android.AddChannelGroup(new NotificationChannelGroupRequest("Reminder", "Erinnerung"));
-
             foreach (var Event in Enums.EventType)
             {
                 if (Event.Key == eEventType.NotSet)
@@ -46,7 +44,6 @@ namespace SymptomTracker
                     Id = $"Reminder_{Event.Key}",
                     Name = $"{Event.Value} Erinnerung",
                     Description = $"Alle Benachrigutgungne die dich an {Event.Value} erinnern sollen",
-                    //Group = "Reminder"
                 });
             }
         }

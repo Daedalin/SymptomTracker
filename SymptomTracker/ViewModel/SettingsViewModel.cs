@@ -13,6 +13,8 @@ namespace SymptomTracker.ViewModel
 {
     internal class SettingsViewModel : ViewModelBase
     {
+        private eEventType m_EventType;
+
         public SettingsViewModel()
         {
             ViewTitle = "Einstellungen";
@@ -20,6 +22,7 @@ namespace SymptomTracker.ViewModel
             UpdateDBClick = new RelayCommand(OnUpdateDB);
             LogOutClick = new RelayCommand(OnLogOutClick);
             ReminderClick = new RelayCommand(OnReminderClick);
+            ReminderClearClick = new RelayCommand(OnReminderClearClick);
             GetKey();
         }
 
@@ -28,10 +31,29 @@ namespace SymptomTracker.ViewModel
             get => GetProperty<string>();
             set => SetProperty(value);
         }
+        public TimeSpan StartTime
+        {
+            get => GetProperty<TimeSpan>();
+            set => SetProperty(value);
+        }
+        public List<KeyValuePair<eEventType, string>> Typs { get => Enums.EventType; }
+        public KeyValuePair<eEventType, string> SelectedType
+        {
+            get
+            {
+                return Typs.FirstOrDefault(t => t.Key == m_EventType);
+            }
+            set
+            {
+                m_EventType = value.Key;
+                OnPropertyChanged();
+            }
+        }
         public RelayCommand SaveClick { get; set; }
         public RelayCommand LogOutClick { get; set; }
         public RelayCommand UpdateDBClick { get; set; }
         public RelayCommand ReminderClick { get; set; }
+        public RelayCommand ReminderClearClick { get; set; }
 
         private void OnLogOutClick()
         {
@@ -46,11 +68,15 @@ namespace SymptomTracker.ViewModel
             Validate(result);
             UpdateDBClick.IsEnabled = true;
         }
+        private void OnReminderClearClick()
+        {
+           LocalNotificationCenter.Current.CancelAll();
+        }
 
         private async void OnReminderClick()
         {
-            eEventType eEvent = eEventType.Symptom;
-            DateTime time = DateTime.Now;
+            DateTime time = DateTime.Today;
+            time = time.AddMilliseconds(StartTime.TotalMilliseconds);
 
             if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
             {
@@ -59,8 +85,8 @@ namespace SymptomTracker.ViewModel
 
             var notification = new NotificationRequest
             {
-                NotificationId = (int)eEvent,
-                Title = $"Hast du heute schon {Enums.EventType.First(t => t.Key == eEvent).Value} eingetragen",
+                NotificationId = (int)m_EventType,
+                Title = $"Hast du heute schon {Enums.EventType.First(t => t.Key == m_EventType).Value} eingetragen",
                 Schedule = new NotificationRequestSchedule
                 {
                     RepeatType = NotificationRepeat.Daily,   
@@ -68,7 +94,7 @@ namespace SymptomTracker.ViewModel
                 },
                 Android = new AndroidOptions
                 {
-                    ChannelId = $"Reminder_{eEvent}",
+                    ChannelId = $"Reminder_{m_EventType}",
                 }
             };
 
