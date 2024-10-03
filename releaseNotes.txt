@@ -1,8 +1,10 @@
 ❗Bitte denkt dran euern Key vor dem update zu sichern.❗
 
-Version 1.2.0
+Version 1.3.1
 Bugfixes:
-Login während der lade Zeit deaktivieren 
+neue Felder verkleinern.
 
 Futures:
-Nun wird man benachritigt, wenn man ein noch nicht gespeichertes Event verlassen möchte.
+es wurden neue Felder hinzugefügt.
+außerdem kann man nun Benachrichtigungen einstellen.
+die App ist nun ein wenig Bunter
