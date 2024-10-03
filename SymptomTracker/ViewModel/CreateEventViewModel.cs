@@ -47,9 +47,9 @@ namespace SymptomTracker.ViewModel
             Date = DateTime.Now;
             Title = String.Empty;
             m_EventType = eventType;
-            Description = " ";
             EndTime = DateTime.Now.TimeOfDay;
             StartTime = DateTime.Now.TimeOfDay;
+
 
             __Ini();
         }

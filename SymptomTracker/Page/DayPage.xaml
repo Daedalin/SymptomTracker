@@ -4,7 +4,9 @@
                        xmlns:dg="clr-namespace:Maui.DataGrid;assembly=Maui.DataGrid"
                        xmlns:Pages="clr-namespace:SymptomTracker.Page"
                        x:Class="SymptomTracker.Page.DayPage"
-                       Title="{Binding ViewTitle}">
+                       Title="{Binding ViewTitle}"
+                       BackgroundColor="#543078"
+                       Shell.BackgroundColor="#302059">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

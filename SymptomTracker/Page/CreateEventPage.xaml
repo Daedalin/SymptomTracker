@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SymptomTracker.Page.CreateEventPage"
              xmlns:conv="clr-namespace:SymptomTracker.Converter"
-             Title="{Binding ViewTitle}">
+             Title="{Binding ViewTitle}"
+             BackgroundColor="#543078"
+             Shell.BackgroundColor="#302059">
     <ContentPage.Resources>
         <conv:InverseBooleanConverter x:Key="InverseBoolean"/>
     </ContentPage.Resources>
@@ -119,6 +121,8 @@
             <Editor  x:Name="Quantity"
                      Text="{Binding Quantity,Mode=TwoWay}"
                      Margin="0,10,0,0"
+                     MaximumHeightRequest="315"
+                     AutoSize="TextChanges"
                      Placeholder="Stärke / Menge - (grob)"
                      MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                      FontSize="18"/>
@@ -128,6 +132,8 @@
                      IsVisible="{Binding IsFood}"
                      Text="{Binding PreparationMethod,Mode=TwoWay}"
                      Margin="0,10,0,0"
+                     MaximumHeightRequest="315"
+                     AutoSize="TextChanges"
                      Placeholder="Zubereitungsart (Roh, gekocht, etc.)"
                      MaximumWidthRequest="{Binding Width, Source={x:Reference List}}"
                      FontSize="18"/>

@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:VM="clr-namespace:SymptomTracker.ViewModel"
              x:Class="SymptomTracker.MainPage"
-             Title="{Binding ViewTitle}">
+             Title="{Binding ViewTitle}"
+             BackgroundColor="#543078"
+             Shell.BackgroundColor="#302059">
     <ContentPage.BindingContext>
         <VM:MainViewModel/>
     </ContentPage.BindingContext>
