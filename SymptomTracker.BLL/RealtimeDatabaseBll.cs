@@ -207,8 +207,7 @@ namespace SymptomTracker.BLL
 
                 var Data = await m_firebaseClient.Child(LoginBll.GetUid())
                                                  .Child("Dates")
-                                                 .Child(Date.ToString("yyyy-MM"))
-                                                 .Child(Date.ToString("dd"))
+                                                 .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
                                                  .OnceSingleAsync<string>();
 
                 return await Cryptography.DecryptAndDeserializeMessage<Day>(Data);
@@ -279,8 +278,7 @@ namespace SymptomTracker.BLL
 
                 await m_firebaseClient.Child(LoginBll.GetUid())
                                       .Child("Dates")
-                                      .Child(day.Date.ToString("yyyy-MM"))
-                                      .Child(day.Date.ToString("dd"))
+                                      .Child($"{day.Date.Year}-{day.Date.Month}-{day.Date.Day}")
                                       .PutAsync<string>(Data);
 
                 return OperatingResult.OK();
