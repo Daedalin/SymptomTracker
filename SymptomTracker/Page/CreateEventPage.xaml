@@ -184,6 +184,10 @@
             <Button Text="Speichern"
                     Margin="0,20,0,0"
                     Command="{Binding SaveClick}"/>
+            <Button Text="Löschen"
+                    Margin="0,20,0,0"
+                    IsVisible="{Binding Exists}"
+                    Command="{Binding DeleteClick}"/>
 
         </VerticalStackLayout >
     </ScrollView>
