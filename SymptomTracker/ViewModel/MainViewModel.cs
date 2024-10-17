@@ -69,7 +69,21 @@ namespace SymptomTracker.ViewModel
             var Data = await RealtimeDatabaseBll.GetDateForReport(eEventType.NotSet, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16));
             Validate(Data);
 
-            PDF_Bll.GeneratingReports(Data.Result, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16), $"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
+            List<string> ImagePaths = new List<string>();
+            foreach (var day in Data.Result)
+            {
+                if (!day.Events.Any(e => e.HasImage))
+                    continue;
+
+                foreach (var EventId in day.Events.Where(e => e.HasImage).Select(s => s.ID))
+                {
+                    var ImagePathResult = await StorageBll.DownloadImage(day.Date, EventId);
+                    if (ImagePathResult != null && ImagePathResult.Success)
+                        ImagePaths.Add(ImagePathResult.Result);
+                }
+            }
+
+            PDF_Bll.GeneratingReports(Data.Result, ImagePaths, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16), $"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
         }
     }
 }
