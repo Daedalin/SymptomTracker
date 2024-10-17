@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SymptomTracker.BLL
@@ -15,7 +16,7 @@ namespace SymptomTracker.BLL
     public class PDF_Bll
     {
         #region GeneratingReports
-        public static OperatingResult GeneratingReports(List<Day> Days, List<string> ImagePaths, DateOnly From, DateOnly Till, string PDFPath)
+        public static OperatingResult GeneratingReports(List<Day> Days, List<string> ImagePaths, DateTime From, DateTime Till, string PDFPath)
         {
             try
             {
@@ -29,8 +30,9 @@ namespace SymptomTracker.BLL
                 var Titel = new TextFragment($"Report von {From.ToLongDateString()} zu zum {Till.ToLongDateString()}");
                 Titel.TextState.FontStyle = FontStyles.Bold;
                 Titel.TextState.FontSize = 15;
-                Titel.Margin = new MarginInfo(0,20,0,0);
-                page1.Paragraphs.Add( Titel );
+                Titel.Margin = new MarginInfo(0, 20, 0, 0);
+                page1.Paragraphs.Add(Titel);
+
                 #region Table
                 var ColCount = ImagePaths.Count > 0 ? 9 : 8;
                 Table table = new Table();
@@ -96,24 +98,27 @@ namespace SymptomTracker.BLL
                 page1.Paragraphs.Add(table);
                 #endregion
 
-                Aspose.Pdf.Page page2 = document.Pages.Add();
-                page2.PageInfo = new PageInfo() { IsLandscape = false };
-                foreach (var ImagePath in ImagePaths)
+                if (ImagePaths.Count > 0)
                 {
-                    Bitmap img = new Bitmap(ImagePath);
-                    var image = new Aspose.Pdf.Image();
+                    Aspose.Pdf.Page page2 = document.Pages.Add();
+                    page2.PageInfo = new PageInfo() { IsLandscape = false };
+                    foreach (var ImagePath in ImagePaths)
+                    {
+                        var image = new Aspose.Pdf.Image();
+                        Bitmap img = new Bitmap(ImagePath);
 
-                    double scale = 1;
-                    if(img.Width > 500)
-                        scale = img.Width / 500.0;
-                    else if(img.Height > 500)
-                        scale = img.Height / 500.0;
+                        double scale = 1;
+                        if (img.Width > 500)
+                            scale = img.Width / 500.0;
+                        else if (img.Height > 500)
+                            scale = img.Height / 500.0;
+                        image.FixWidth = img.Width / scale;
+                        image.FixHeight = img.Height / scale;
 
-                    image.FixWidth = img.Width / scale;
-                    image.FixHeight = img.Height / scale;
-                    image.File = ImagePath;
-                    image.Title = new TextFragment(Path.GetFileName(ImagePath) ?? string.Empty);
-                    page2.Paragraphs.Add(image);
+                        image.File = ImagePath;
+                        image.Title = new TextFragment(Path.GetFileName(ImagePath) ?? string.Empty);
+                        page2.Paragraphs.Add(image);
+                    }
                 }
 
                 document.Save(PDFPath);

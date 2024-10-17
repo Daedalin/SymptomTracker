@@ -20,7 +20,6 @@ namespace SymptomTracker.ViewModel
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
             ViewTitle = "Symptom Tracker";
-
         }
 
         #region Command
@@ -65,25 +64,10 @@ namespace SymptomTracker.ViewModel
 
         public async void OnGeneratingReportsClick()
         {
-            //Button disabel
-            var Data = await RealtimeDatabaseBll.GetDateForReport(eEventType.NotSet, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16));
-            Validate(Data);
-
-            List<string> ImagePaths = new List<string>();
-            foreach (var day in Data.Result)
+            await Shell.Current.Navigation.PushAsync(new GeneratingReportsPage()
             {
-                if (!day.Events.Any(e => e.HasImage))
-                    continue;
-
-                foreach (var EventId in day.Events.Where(e => e.HasImage).Select(s => s.ID))
-                {
-                    var ImagePathResult = await StorageBll.DownloadImage(day.Date, EventId);
-                    if (ImagePathResult != null && ImagePathResult.Success)
-                        ImagePaths.Add(ImagePathResult.Result);
-                }
-            }
-
-            PDF_Bll.GeneratingReports(Data.Result, ImagePaths, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16), $"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
+                BindingContext = new GeneratingReportsViewModel()
+            });
         }
     }
 }

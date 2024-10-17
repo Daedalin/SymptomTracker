@@ -28,7 +28,7 @@ namespace SymptomTracker.BLL
         }
 
         #region GetDateForReport
-        public async Task<OperatingResult<List<Day>>> GetDateForReport(eEventType eventType, DateOnly StartDay, DateOnly EndDay)
+        public async Task<OperatingResult<List<Day>>> GetDateForReport(eEventType eventType, DateTime StartDay, DateTime EndDay)
         {
             try
             {
