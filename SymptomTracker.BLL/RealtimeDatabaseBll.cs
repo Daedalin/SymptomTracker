@@ -36,30 +36,16 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
 
-                var Year = StartDay.Year;
-                List<FirebaseObject<string>> AllDays = new List<FirebaseObject<string>>();
-                for (int Month = StartDay.Month; Month != EndDay.Month + 1; Month++)
-                {
-                    var DaysResult = await m_firebaseClient.Child(m_LoginBll.GetUid())
-                                                 .Child("Dates")
-                                                 .Child($"{Year}-{Month.ToString("D2")}")
-                                                 .OnceAsync<string>();
+                var StartFilter = StartDay.ToString("yyyy-M-d");
+                var EndFilter = EndDay.ToString("yyyy-M-d");
+                var DaysResult = await m_firebaseClient.Child(m_LoginBll.GetUid())
+                                             .Child("Dates")
+                                             .OrderByKey()
+                                             .StartAt(StartFilter)
+                                             .EndAt(EndFilter)
+                                             .OnceAsync<string>();
 
-                    List<FirebaseObject<string>> Days = DaysResult.ToList();
-
-                    if (Month == StartDay.Month)
-                        Days.RemoveAll(t => int.Parse(t.Key) < StartDay.Day);
-                    else if (Month == EndDay.Month)
-                        Days.RemoveAll(t => int.Parse(t.Key) > EndDay.Day);
-
-                    AllDays.AddRange(Days);
-
-                    if (Month == 12)
-                    {
-                        Month = 0;
-                        Year++;
-                    }
-                }
+                List<FirebaseObject<string>> AllDays = DaysResult.ToList();
 
                 List<Day> Result = new List<Day>();
                 //Parallel
@@ -73,7 +59,11 @@ namespace SymptomTracker.BLL
 
                     var Data = JsonSerializer.Deserialize<Day>(DecryptResult.Result);
 
-                    if (Data.Events.Any(t => t.EventType == eventType))
+                    if (eventType == eEventType.NotSet)
+                    {
+                        Result.Add(Data);
+                    }
+                    else if (Data.Events.Any(t => t.EventType == eventType))
                     {
                         Data.Events.RemoveAll(t => t.EventType != eventType);
                         Result.Add(Data);

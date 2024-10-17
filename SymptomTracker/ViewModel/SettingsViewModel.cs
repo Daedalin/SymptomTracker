@@ -23,16 +23,20 @@ namespace SymptomTracker.ViewModel
             SaveClick = new RelayCommand(SetKey);
             UpdateDBClick = new RelayCommand(OnUpdateDB);
             LogOutClick = new RelayCommand(OnLogOutClick);
+#if ANDROID
             ReminderClick = new RelayCommand(OnReminderClick);
             ReminderClearClick = new RelayCommandPara(OnReminderClearClick);
             ReminderClearAllClick = new RelayCommand(OnReminderClearAllClick);
+#endif
             GetKey();
         }
+#if ANDROID
         public ObservableCollection<NotificationRequest> Notifications
         {
             get => GetProperty<ObservableCollection<NotificationRequest>>();
             set => SetProperty(value);
         }
+#endif
         public string Key
         {
             get => GetProperty<string>();
@@ -65,8 +69,10 @@ namespace SymptomTracker.ViewModel
 
         public override async void OnAppearing()
         {
+#if ANDROID
             var result = await LocalNotificationCenter.Current.GetPendingNotificationList();
             Notifications = new ObservableCollection<NotificationRequest>(result);
+#endif
             base.OnAppearing();
         }
         private void OnLogOutClick()
@@ -82,6 +88,8 @@ namespace SymptomTracker.ViewModel
             Validate(result);
             UpdateDBClick.IsEnabled = true;
         }
+
+#if ANDROID
         private void OnReminderClearClick(object parra)
         {
             if (!int.TryParse(parra?.ToString(), out var ID))
@@ -131,8 +139,8 @@ namespace SymptomTracker.ViewModel
             await Shell.Current.DisplayAlert("Neue Erinnerung", $"Für {type} wurde auf {time} gesetzt", "Ok");
             Notifications.Add(notification);
         }
-
-        #region Get Key
+#endif
+#region Get Key
         private void GetKey()
         {
             Task.Run(async () =>

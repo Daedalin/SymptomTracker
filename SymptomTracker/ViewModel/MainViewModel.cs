@@ -66,10 +66,10 @@ namespace SymptomTracker.ViewModel
         public async void OnGeneratingReportsClick()
         {
             //Button disabel
-            var Data = await RealtimeDatabaseBll.GetDateForReport(eEventType.Food, new DateOnly(2024, 03, 15), new DateOnly(2024, 04, 10));
+            var Data = await RealtimeDatabaseBll.GetDateForReport(eEventType.NotSet, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16));
             Validate(Data);
 
-            PDF_Bll.GeneratingReports(Data.Result);
+            PDF_Bll.GeneratingReports(Data.Result, new DateOnly(2024, 10, 12), new DateOnly(2024, 10, 16), $"C:\\Temp\\Generated-PDF-{DateTime.Now.ToShortDateString()}.pdf");
         }
     }
 }
