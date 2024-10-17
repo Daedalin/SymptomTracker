@@ -8,6 +8,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
+using Microsoft.Maui.Media;
+using Microsoft.Maui.Devices;
+using Microsoft.Maui.Devices.Sensors;
 
 namespace SymptomTracker.ViewModel
 {

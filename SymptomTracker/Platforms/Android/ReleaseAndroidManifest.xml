@@ -19,5 +19,4 @@
 
 	<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
 </manifest>
