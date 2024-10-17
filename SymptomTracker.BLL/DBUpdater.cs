@@ -73,10 +73,12 @@ namespace SymptomTracker.BLL
                     try
                     {
                         var Date = DateTime.Parse(Day.Key);
+                        if (Date.ToString("yyyy-M-d") == Date.ToString("yyyy-MM-dd"))
+                            continue;
+
                         await firebaseClient.Child(Uid)
                                             .Child("Dates")
-                                            .Child(Date.ToString("yyyy-MM"))
-                                            .Child(Date.ToString("dd"))
+                                            .Child(Date.ToString("yyyy-MM-dd"))
                                             .PutAsync<string>(Day.Object);
 
                         await firebaseClient.Child(Uid)

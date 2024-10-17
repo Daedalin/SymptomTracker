@@ -36,8 +36,8 @@ namespace SymptomTracker.BLL
                 if (!ClientRault.Success)
                     return OperatingResult<List<Day>>.Fail(ClientRault.Message, eMessageType.Error);
 
-                var StartFilter = StartDay.ToString("yyyy-M-d");
-                var EndFilter = EndDay.ToString("yyyy-M-d");
+                var StartFilter = StartDay.ToString("yyyy-MM-dd");
+                var EndFilter = EndDay.ToString("yyyy-MM-dd");
                 var DaysResult = await m_firebaseClient.Child(m_LoginBll.GetUid())
                                              .Child("Dates")
                                              .OrderByKey()
@@ -193,11 +193,11 @@ namespace SymptomTracker.BLL
             {
                 var ClientRault = await CreateFirebaseClient();
                 if (!ClientRault.Success)
-                    return OperatingResult<Day>.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+                    return OperatingResult<Day>.Fail(ClientRault.Message, eMessageType.Error);
 
                 var Data = await m_firebaseClient.Child(LoginBll.GetUid())
                                                  .Child("Dates")
-                                                 .Child($"{Date.Year}-{Date.Month}-{Date.Day}")
+                                                 .Child($"{Date.ToString("yyyy-MM-dd")}")
                                                  .OnceSingleAsync<string>();
 
                 return await Cryptography.DecryptAndDeserializeMessage<Day>(Data);
@@ -262,13 +262,13 @@ namespace SymptomTracker.BLL
             {
                 var ClientRault = await CreateFirebaseClient();
                 if (!ClientRault.Success)
-                    return OperatingResult.Fail(ClientRault.Message, Daedalin.Core.Enum.eMessageType.Error);
+                    return OperatingResult.Fail(ClientRault.Message, eMessageType.Error);
 
                 string Data = await Cryptography.SerializeAndEncryptMessage(day);
 
                 await m_firebaseClient.Child(LoginBll.GetUid())
                                       .Child("Dates")
-                                      .Child($"{day.Date.Year}-{day.Date.Month}-{day.Date.Day}")
+                                      .Child($"{day.Date.ToString("yyyy-MM-dd")}")
                                       .PutAsync<string>(Data);
 
                 return OperatingResult.OK();

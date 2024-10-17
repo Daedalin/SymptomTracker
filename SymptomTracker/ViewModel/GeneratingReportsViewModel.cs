@@ -18,9 +18,15 @@ namespace SymptomTracker.ViewModel
             GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
             FromDate = DateTime.Now;
             TillDate = DateTime.Now;
+            WithImages = true;
         }
 
         public RelayCommand GeneratingReportsClick { get; set; }
+        public bool WithImages
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
         public DateTime FromDate
         {
             get => GetProperty<DateTime>();
@@ -54,16 +60,19 @@ namespace SymptomTracker.ViewModel
             Validate(Data);
 
             List<string> ImagePaths = new List<string>();
-            foreach (var day in Data.Result)
+            if (WithImages)
             {
-                if (!day.Events.Any(e => e.HasImage))
-                    continue;
-
-                foreach (var EventId in day.Events.Where(e => e.HasImage).Select(s => s.ID))
+                foreach (var day in Data.Result)
                 {
-                    var ImagePathResult = await StorageBll.DownloadImage(day.Date, EventId);
-                    if (ImagePathResult != null && ImagePathResult.Success)
-                        ImagePaths.Add(ImagePathResult.Result);
+                    if (!day.Events.Any(e => e.HasImage))
+                        continue;
+
+                    foreach (var EventId in day.Events.Where(e => e.HasImage).Select(s => s.ID))
+                    {
+                        var ImagePathResult = await StorageBll.DownloadImage(day.Date, EventId);
+                        if (ImagePathResult != null && ImagePathResult.Success)
+                            ImagePaths.Add(ImagePathResult.Result);
+                    }
                 }
             }
             var FolerPath = Path.Combine(FileSystem.Current.AppDataDirectory, "Download");
