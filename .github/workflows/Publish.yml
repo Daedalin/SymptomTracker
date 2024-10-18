@@ -57,4 +57,4 @@ jobs:
               serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
               releaseNotesFile: releaseNotes.txt
               groups: internal_tester
-              file: SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
+              file: SymptomTracker/bin/Release/net7.0-android33.0/de.daedalin.SymptomTracker-Signed.apk
