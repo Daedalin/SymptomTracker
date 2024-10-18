@@ -88,6 +88,7 @@ namespace SymptomTracker.ViewModel
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsFood));
                 OnPropertyChanged(nameof(IsWorkRelated));
+                GetTitle();
             }
         }
         public string Title
@@ -186,13 +187,18 @@ namespace SymptomTracker.ViewModel
             PickImageClick = new RelayCommand(__PickImage);
             DeleteImageClick = new RelayCommand(() => ImagePath = null);
 
+            await GetTitle();
+
+            OnPropertyChanged(nameof(HasImage));
+            OnPropertyChanged(nameof(IsWindows));
+        }
+
+        private async Task GetTitle()
+        {
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result.OrderBy(t => t).ToList();
             __OnPerformSearch();
-
-            OnPropertyChanged(nameof(HasImage));
-            OnPropertyChanged(nameof(IsWindows));
         }
         #endregion
 

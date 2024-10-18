@@ -2,6 +2,7 @@
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
 using SymptomTracker.Utils.Entities;
+using CommunityToolkit.Maui;
 
 namespace SymptomTracker
 {
@@ -11,7 +12,8 @@ namespace SymptomTracker
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiApp<App>()                
+                .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
