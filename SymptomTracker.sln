@@ -5,10 +5,6 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker", "SymptomTracker\SymptomTracker.csproj", "{3D445041-0E7D-42B3-8D65-CF419769E395}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker.BLL", "SymptomTracker.BLL\SymptomTracker.BLL.csproj", "{B0BC230E-E60D-4791-8725-1864E40AF3CD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SymptomTracker.Utils", "SymptomTracker.Utils\SymptomTracker.Utils.csproj", "{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{45077B2E-91B1-4ED7-B87D-3FD93D75BB66}"
 	ProjectSection(SolutionItems) = preProject
 		releaseNotes.txt = releaseNotes.txt
@@ -26,14 +22,6 @@ Global
 		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D445041-0E7D-42B3-8D65-CF419769E395}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0BC230E-E60D-4791-8725-1864E40AF3CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3B3C9B8-0BE7-4128-9D93-508D159FDC2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
