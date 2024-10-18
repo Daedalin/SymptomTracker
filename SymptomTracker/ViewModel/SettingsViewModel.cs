@@ -5,7 +5,9 @@ using SymptomTracker.Page;
 using SymptomTracker.Utils.Entities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,11 +23,20 @@ namespace SymptomTracker.ViewModel
             SaveClick = new RelayCommand(SetKey);
             UpdateDBClick = new RelayCommand(OnUpdateDB);
             LogOutClick = new RelayCommand(OnLogOutClick);
+#if ANDROID
             ReminderClick = new RelayCommand(OnReminderClick);
-            ReminderClearClick = new RelayCommand(OnReminderClearClick);
+            ReminderClearClick = new RelayCommandPara(OnReminderClearClick);
+            ReminderClearAllClick = new RelayCommand(OnReminderClearAllClick);
+#endif
             GetKey();
         }
-
+#if ANDROID
+        public ObservableCollection<NotificationRequest> Notifications
+        {
+            get => GetProperty<ObservableCollection<NotificationRequest>>();
+            set => SetProperty(value);
+        }
+#endif
         public string Key
         {
             get => GetProperty<string>();
@@ -53,8 +64,17 @@ namespace SymptomTracker.ViewModel
         public RelayCommand LogOutClick { get; set; }
         public RelayCommand UpdateDBClick { get; set; }
         public RelayCommand ReminderClick { get; set; }
-        public RelayCommand ReminderClearClick { get; set; }
+        public RelayCommandPara ReminderClearClick { get; set; }
+        public RelayCommand ReminderClearAllClick { get; set; }
 
+        public override async void OnAppearing()
+        {
+#if ANDROID
+            var result = await LocalNotificationCenter.Current.GetPendingNotificationList();
+            Notifications = new ObservableCollection<NotificationRequest>(result);
+#endif
+            base.OnAppearing();
+        }
         private void OnLogOutClick()
         {
             Shell.Current.Navigation.PopAsync(false);
@@ -68,9 +88,21 @@ namespace SymptomTracker.ViewModel
             Validate(result);
             UpdateDBClick.IsEnabled = true;
         }
-        private void OnReminderClearClick()
+
+#if ANDROID
+        private void OnReminderClearClick(object parra)
         {
-           LocalNotificationCenter.Current.CancelAll();
+            if (!int.TryParse(parra?.ToString(), out var ID))
+                return;
+
+            LocalNotificationCenter.Current.Cancel(ID);
+            OnAppearing();
+        }
+
+        private void OnReminderClearAllClick()
+        {
+            LocalNotificationCenter.Current.CancelAll();
+            Notifications.Clear();
         }
 
         private async void OnReminderClick()
@@ -78,18 +110,23 @@ namespace SymptomTracker.ViewModel
             DateTime time = DateTime.Today;
             time = time.AddMilliseconds(StartTime.TotalMilliseconds);
 
+            if (time <= DateTime.Now)
+                time = time.AddDays(1);
+
             if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
             {
                 await LocalNotificationCenter.Current.RequestNotificationPermission();
             }
 
+            var type = Enums.EventType.First(t => t.Key == m_EventType).Value;
+
             var notification = new NotificationRequest
             {
                 NotificationId = (int)m_EventType,
-                Title = $"Hast du heute schon {Enums.EventType.First(t => t.Key == m_EventType).Value} eingetragen",
+                Title = $"Hast du heute schon {type} eingetragen",
                 Schedule = new NotificationRequestSchedule
                 {
-                    RepeatType = NotificationRepeat.Daily,   
+                    RepeatType = NotificationRepeat.Daily,
                     NotifyTime = time.AddSeconds(5),
                 },
                 Android = new AndroidOptions
@@ -99,9 +136,11 @@ namespace SymptomTracker.ViewModel
             };
 
             await LocalNotificationCenter.Current.Show(notification);
+            await Shell.Current.DisplayAlert("Neue Erinnerung", $"Für {type} wurde auf {time} gesetzt", "Ok");
+            Notifications.Add(notification);
         }
-
-        #region Get Key
+#endif
+#region Get Key
         private void GetKey()
         {
             Task.Run(async () =>

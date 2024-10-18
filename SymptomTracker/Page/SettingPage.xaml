@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SymptomTracker.Page.SettingPage"
-             Title="{Binding ViewTitle}"
-             BackgroundColor="#543078"
-             Shell.BackgroundColor="#302059">
+<Pages:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       x:Class="SymptomTracker.Page.SettingPage"
+                       xmlns:Pages="clr-namespace:SymptomTracker.Page"
+                       Title="{Binding ViewTitle}"
+                       BackgroundColor="#543078"
+                       Shell.BackgroundColor="#302059">
     <Grid>
-        <VerticalStackLayout
+        <ScrollView>
+            <VerticalStackLayout
             x:Name="SettingsRoot"
             Spacing="25"
             Padding="30,0"
@@ -14,35 +16,35 @@
             VerticalOptions="Start"
             HorizontalOptions="Center">
 
-            <VerticalStackLayout Margin="0,10,0,0">
-                <Label Text="Key"/>
-                <HorizontalStackLayout>
-                    <Entry Text="{Binding Key,Mode=TwoWay}"
+                <VerticalStackLayout Margin="0,10,0,0">
+                    <Label Text="Key"/>
+                    <HorizontalStackLayout>
+                        <Entry Text="{Binding Key,Mode=TwoWay}"
                            Margin="0,0,10,0"
                            MinimumWidthRequest="200"
                            MaximumWidthRequest="300"  
                            Placeholder="Key"
                            FontSize="18"/>
-                    <Button Text="Save"          
+                        <Button Text="Save"          
                             Command="{Binding SaveClick}"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
 
 
-            <Button Text="Abmelden" 
+                <Button Text="Abmelden" 
                     Margin="0,10,0,0"
                     Command="{Binding LogOutClick}"
                     CommandParameter="1"/>
 
-            <Button Text="Update DB" 
+                <Button Text="Update DB" 
                     Margin="0,10,0,0"
                     Command="{Binding UpdateDBClick}"
                     CommandParameter="1"/>
 
-            <Grid ColumnDefinitions="*,*">
-                <VerticalStackLayout>
-                    <Label Text="Typ"/>
-                    <Picker x:Name="TypePicker"
+                <Grid ColumnDefinitions="*,*">
+                    <VerticalStackLayout>
+                        <Label Text="Typ"/>
+                        <Picker x:Name="TypePicker"
                         Margin="0,10,0,0"
                         FontSize="18"
                         WidthRequest="100"
@@ -50,23 +52,47 @@
                         ItemDisplayBinding="{Binding Value}"
                         SelectedItem="{Binding SelectedType}"
                         HorizontalOptions="Start"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1">
-                    <Label Text="Um: "/>
-                    <TimePicker Time="{Binding StartTime}"
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Um: "/>
+                        <TimePicker Time="{Binding StartTime}"
                                 FontSize="18"
                                 Margin="0,10,0,0"
                                 MinimumWidthRequest="100"/>
-                </VerticalStackLayout>
-            </Grid>
-            <Button Text="Benachrichtigung hinugüfen" 
+                    </VerticalStackLayout>
+                </Grid>
+                <Button Text="Benachrichtigung hinugüfen" 
                     Margin="0,10,0,0"
                     Command="{Binding ReminderClick}"
                     CommandParameter="1"/>
-            <Button Text="Benachrichtigung alle löschen" 
+
+                <CollectionView ItemsSource="{Binding Notifications}"
+                            x:Name="NotificationCollectionView">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame>
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                                    <Label Text="{Binding Schedule.NotifyTime}"/>
+                                    <Label Text="{Binding Title}" 
+                                   Grid.Row="1"
+                                   Grid.ColumnSpan="99"/>
+                                    <Button Text="Remove"
+                                    Command="{Binding BindingContext.ReminderClearClick, Source={x:Reference NotificationCollectionView}}"
+                                    CommandParameter="{Binding NotificationId}"
+                                    Grid.Column="2"
+                                    MaximumWidthRequest="100"
+                                    HorizontalOptions="End"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Benachrichtigung alle löschen" 
                     Margin="0,10,0,0"
                     Command="{Binding ReminderClearClick}"
                     CommandParameter="1"/>
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
-</ContentPage>
+</Pages:ContentPageBase>

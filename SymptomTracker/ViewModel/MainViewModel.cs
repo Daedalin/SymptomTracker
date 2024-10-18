@@ -1,6 +1,7 @@
 ﻿using Daedalin.Core.MVVM.ViewModel;
 using SymptomTracker.Page;
 using SymptomTracker.Utils.Entities;
+using SymptomTracker.BLL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,9 +13,9 @@ namespace SymptomTracker.ViewModel
 {
     class MainViewModel : ViewModelBase
     {
-
         public MainViewModel()
         {
+            GeneratingReportsClick = new RelayCommand(OnGeneratingReportsClick);
             ShowDayClick = new RelayCommand(OnShowDayClick);
             CreateEventClick = new RelayCommandPara(OnCreateEventClick);
             ShowSettingsClick = new RelayCommand(OnShowSettingsClick);
@@ -25,6 +26,7 @@ namespace SymptomTracker.ViewModel
         public RelayCommandPara CreateEventClick { get; set; }
         public RelayCommand ShowDayClick { get; set; }
         public RelayCommand ShowSettingsClick { get; set; }
+        public RelayCommand GeneratingReportsClick { get; set; }
         #endregion
 
         #region OnCreateEventClick
@@ -60,6 +62,12 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
-        
+        public async void OnGeneratingReportsClick()
+        {
+            await Shell.Current.Navigation.PushAsync(new GeneratingReportsPage()
+            {
+                BindingContext = new GeneratingReportsViewModel()
+            });
+        }
     }
 }

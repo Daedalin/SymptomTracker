@@ -88,6 +88,7 @@ namespace SymptomTracker.ViewModel
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsFood));
                 OnPropertyChanged(nameof(IsWorkRelated));
+                GetTitle();
             }
         }
         public string Title
@@ -158,9 +159,12 @@ namespace SymptomTracker.ViewModel
 
         public bool IsFood => m_EventType == eEventType.Food;
 
+        public bool Exists => m_Id != -1;
+
         #region Command
         public RelayCommand PerformSearch { get; set; }
         public RelayCommand SaveClick { get; set; }
+        public RelayCommand DeleteClick { get; set; }
         public RelayCommand TakePhotoClick { get; set; }
         public RelayCommand PickImageClick { get; set; }
         public RelayCommand DeleteImageClick { get; set; }
@@ -177,18 +181,24 @@ namespace SymptomTracker.ViewModel
             Shell.Current.Navigating += __Navigating;
 
             SaveClick = new RelayCommand(__OnSaveClick);
+            DeleteClick = new RelayCommand(__OnDeleteClick);
             TakePhotoClick = new RelayCommand(__TakePhoto);
             PerformSearch = new RelayCommand(__OnPerformSearch);
             PickImageClick = new RelayCommand(__PickImage);
             DeleteImageClick = new RelayCommand(() => ImagePath = null);
 
+            await GetTitle();
+
+            OnPropertyChanged(nameof(HasImage));
+            OnPropertyChanged(nameof(IsWindows));
+        }
+
+        private async Task GetTitle()
+        {
             var TitleResult = await RealtimeDatabaseBll.GetLastTitles(m_EventType);
             Validate(TitleResult);
             m_Titles = TitleResult.Result == null ? new List<string>() : TitleResult.Result.OrderBy(t => t).ToList();
             __OnPerformSearch();
-
-            OnPropertyChanged(nameof(HasImage));
-            OnPropertyChanged(nameof(IsWindows));
         }
         #endregion
 
@@ -223,13 +233,37 @@ namespace SymptomTracker.ViewModel
         }
         #endregion
 
+        #region __OnDeleteClick
+        private async void __OnDeleteClick()
+        {
+
+            if (m_Id == -1)
+                return;
+
+            var dayResult = await RealtimeDatabaseBll.GetDay(Date);
+            Validate(dayResult);
+
+            if (!dayResult.Success || dayResult.Result == null)
+                return;
+
+            dayResult.Result.Events.RemoveAll(t => t.ID == m_Id);
+
+            var Result = await RealtimeDatabaseBll.UpdateDay(dayResult.Result);
+            if (Validate(Result))
+            {               
+                m_SkipClosingCheck = true;                
+                await Shell.Current.Navigation.PopAsync();
+            }
+        }
+        #endregion
+
         #region __OnSaveClick
         private async void __OnSaveClick()
         {
             var dayResult = await RealtimeDatabaseBll.GetDay(Date);
             Validate(dayResult);
 
-            if (!dayResult.Success)
+            if (!dayResult.Success )
                 return;
 
             Day day;

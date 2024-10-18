@@ -35,6 +35,10 @@
             <Button Text="Tag anzeigen" 
                     Padding="10"
                     Command="{Binding ShowDayClick}"/>
+            <Button Text="Reporte erzeugen" 
+                    Padding="10"
+                    Command="{Binding GeneratingReportsClick}"
+                    IsVisible="{OnPlatform Default=False, WinUI=True}"/>
             <Button Text="Einstellungen" 
                     Padding="10"
                     Command="{Binding ShowSettingsClick}"/>

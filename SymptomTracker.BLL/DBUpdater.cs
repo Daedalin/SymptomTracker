@@ -15,8 +15,9 @@ namespace SymptomTracker.BLL
 {
     internal static class DBUpdater
     {
-        public const int CurrentDBVersion = 2;
+        public const int CurrentDBVersion = 3;
 
+        #region From1VTo2V
         public async static Task<OperatingResult> From1VTo2V(FirebaseClient firebaseClient, string Uid)
         {
             try
@@ -56,5 +57,48 @@ namespace SymptomTracker.BLL
                 return OperatingResult.Fail(ex);
             }
         }
+        #endregion
+
+        #region From2VTo3V
+        public async static Task<OperatingResult> From2VTo3V(FirebaseClient firebaseClient, string Uid)
+        {
+            try
+            {
+                var Days = await firebaseClient.Child(Uid)
+                                               .Child("Dates")
+                                               .OnceAsync<string>();
+
+                foreach (var Day in Days)
+                {
+                    try
+                    {
+                        var Date = DateTime.Parse(Day.Key);
+                        if (Date.ToString("yyyy-M-d") == Date.ToString("yyyy-MM-dd"))
+                            continue;
+
+                        await firebaseClient.Child(Uid)
+                                            .Child("Dates")
+                                            .Child(Date.ToString("yyyy-MM-dd"))
+                                            .PutAsync<string>(Day.Object);
+
+                        await firebaseClient.Child(Uid)
+                                            .Child("Dates")
+                                            .Child(Date.ToString("yyyy-M-d"))
+                                            .DeleteAsync();
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+                return OperatingResult.OK();
+            }
+            catch (Exception ex)
+            {
+                return OperatingResult.Fail(ex);
+            }
+        }
+        #endregion
     }
 }
