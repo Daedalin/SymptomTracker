@@ -32,13 +32,13 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build SymptomTracker/SymptomTracker.csproj -c Release -f net7.0-android  /p:AndroidSigningKeyStore=myapp.keystore /p:AndroidSigningKeyAlias=robin /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
+      run: dotnet build SymptomTracker/SymptomTracker.csproj -c Release -f net7.0-android33.0  /p:AndroidSigningKeyStore=myapp.keystore /p:AndroidSigningKeyAlias=robin /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         name: SignedApk
         path: |
-          SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
+          SymptomTracker/bin/Release/net7.0-android33.0/de.daedalin.SymptomTracker-Signed.apk
           releaseNotes.txt
 
 
@@ -57,4 +57,4 @@ jobs:
               serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
               releaseNotesFile: releaseNotes.txt
               groups: internal_tester
-              file: SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
+              file: SymptomTracker/bin/Release/net7.0-android33.0/de.daedalin.SymptomTracker-Signed.apk
