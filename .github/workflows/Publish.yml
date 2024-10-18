@@ -38,7 +38,7 @@ jobs:
       with:
         name: SignedApk
         path: |
-          SymptomTracker/bin/Release/net7.0-android/de.daedalin.SymptomTracker-Signed.apk
+          SymptomTracker/bin/Release/net7.0-android33.0/de.daedalin.SymptomTracker-Signed.apk
           releaseNotes.txt
 
 
